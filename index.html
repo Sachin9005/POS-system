@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mobile Store POS</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- LOGIN PAGE -->
+  <div id="loginPage" class="login-page">
+    <div class="login-box">
+      <div class="logo">📱</div>
+      <h1>Mobile Store</h1>
+      <p>Point of Sale System</p>
+      
+      <input type="text" id="username" value="admin" placeholder="Username" />
+      <input type="password" id="password" value="admin" placeholder="Password" />
+      <button onclick="login()">Login</button>
+      <p class="demo-text">Demo: admin / admin</p>
+    </div>
+  </div>
+
+  <!-- MAIN APPLICATION -->
+  <div id="mainApp" class="hidden">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="logo">
+        <img src="https://via.placeholder.com/50x50/FF6600/FFFFFF?text=📱" alt="Logo"/>
+        <h2>MOBILE STORE</h2>
+      </div>
+      <ul>
+        <li class="active" data-page="dashboard"><i class="fas fa-home"></i> Dashboard</li>
+        <li data-page="place-order"><i class="fas fa-cash-register"></i> Place Order</li>
+        <li data-page="products"><i class="fas fa-box"></i> Products</li>
+        <li data-page="customers"><i class="fas fa-users"></i> Customers</li>
+      </ul>
+      <div class="sidebar-bottom">
+        <div><i class="fas fa-cog"></i> General Settings</div>
+        <div onclick="logout()" style="cursor:pointer"><i class="fas fa-sign-out-alt"></i> Logout</div>
+      </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+
+      <!-- Top Bar -->
+      <div class="topbar">
+        <div class="search-bar">
+          <input type="text" placeholder="Search..."/>
+        </div>
+        <div class="top-right">
+          <button class="icon-btn">🔔</button>
+          <div class="user-info">
+            <img src="https://via.placeholder.com/40/FF6600/FFFFFF?text=🐱" alt="User"/>
+            <div>
+              <strong>User</strong><br>
+              <small>Accountant</small>
+            </div>
+          </div>
+          <div class="date-box">
+            <i class="fas fa-calendar"></i>
+            <span id="currentDate">20 Mar 2026</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- DASHBOARD SECTION -->
+      <div id="dashboardSection" class="content-section">
+        <h1 class="welcome">Welcome, User</h1>
+        <div class="stats-grid">
+          <div class="stat-card purple"><i class="fas fa-heart"></i><h3>50.8K</h3><p>Saved Products</p></div>
+          <div class="stat-card blue"><i class="fas fa-box"></i><h3>23.6K</h3><p>Stock Products</p></div>
+          <div class="stat-card green"><i class="fas fa-shopping-bag"></i><h3>756</h3><p>Sale Products</p></div>
+          <div class="stat-card orange"><i class="fas fa-chart-line"></i><h3>2.3K</h3><p>Average Revenue</p></div>
+        </div>
+        <div class="chart-section">
+          <div class="chart-header">
+            <h2>Overview</h2>
+            <div class="legend"><span class="dot"></span> Deals</div>
+          </div>
+          <canvas id="overviewChart"></canvas>
+        </div>
+      </div>
+
+      <!-- PLACE ORDER SECTION -->
+        <div id="placeOrderSection" class="content-section hidden">
+            <h1>Place New Order</h1>        
+        </div>
+
+        <!-- PRODUCTS SECTION -->
+            <div id="productsSection" class="content-section hidden">
+                <div class="page-header">
+                    <h1>Products</h1>
+                    <button onclick="showAddProductModal()" class="add-btn">
+                    <i class="fas fa-plus"></i> Add Item
+                    </button>
+                </div>
+
+                <div class="customer-search">
+                    <input type="text" id="productSearch" placeholder="Search Item..." onkeyup="searchProducts()"/>
+                </div>
+
+            <div class="table-container">
+                <table class="products-table">
+                <thead>
+                    <tr>
+                    <th>SKU ID</th>
+                    <th>Product Name</th>
+                    <th>Category</th>
+                    <th>InStock Qty</th>
+                    <th>Purchase Qty</th>
+                    <th>Purchase Amount Rs.</th>
+                    <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="productsTableBody"></tbody>
+                </table>
+            </div>
+            </div>
+
+            <!-- ADD / EDIT PRODUCT MODAL -->
+            <div id="addProductModal" class="modal hidden">
+            <div class="modal-content">
+                <h2 id="productModalTitle">Add New Item</h2>
+                
+                <div class="modal-body">
+                <label>Item Code (SKU)</label>
+                <input type="text" id="prodSKU" readonly />
+
+                <label>Product Name</label>
+                <input type="text" id="prodName" placeholder="Enter product name" />
+
+                <label>Category</label>
+                <input type="text" id="prodCategory" placeholder="e.g. Phone, Laptop, Electronics" />
+
+                <label>In Stock Quantity</label>
+                <input type="number" id="prodStock" placeholder="0" />
+
+                <label>Purchase Amount (Rs.)</label>
+                <input type="number" id="prodPrice" placeholder="0.00" />
+                </div>
+
+                <div class="modal-footer">
+                <button onclick="hideProductModal()" class="btn-cancel">Cancel</button>
+                <button onclick="resetProductForm()" class="btn-reset">Reset</button>
+                <button onclick="saveProduct()" class="btn-save">Save</button>
+                </div>
+            </div>
+            </div>
+
+      <!-- CUSTOMERS SECTION -->
+        <div id="customersSection" class="content-section hidden">
+            <div class="page-header">
+                <h1>Customers</h1>
+                <button onclick="showAddCustomerModal()" class="add-btn">
+                <i class="fas fa-plus"></i> Add Customer
+                </button>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="customer-search">
+                <input type="text" id="customerSearch" placeholder="Search Customer..." onkeyup="searchCustomers()"/>
+            </div>
+
+            <!-- Customers Table -->
+            <div class="table-container">
+                <table class="customers-table">
+                    <thead>
+                        <tr>
+                        <th>Code ID</th>
+                        <th>Customer Name</th>
+                        <th>NIC NO.</th>
+                        <th>Address</th>
+                        <th>Phone</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customersTableBody">
+                        <td>
+                            <button onclick="viewCustomer('${cust.id}')" class="action-btn view">👁</button>
+                            <button onclick="editCustomer('${cust.id}')" class="action-btn edit">✏️</button>
+                            <button onclick="deleteCustomer('${cust.id}')" class="action-btn delete">🗑</button>
+                        </td>
+                    </tbody>
+                </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination">
+                    <button>‹</button>
+                    <button class="active">1</button>
+                    <button>2</button>
+                    <button>3</button>
+                    <button>›</button>
+                </div>
+            </div>
+
+
+            <!-- ADD CUSTOMER MODAL -->
+            <div id="addCustomerModal" class="modal hidden">
+                <div class="modal-content">
+                    <h2>Item Select</h2> <!-- Note: Screenshot says "Item Select" but it's for Customer -->
+                    <div class="modal-body">
+                        <label>Customer ID</label>
+                        <input type="text" id="custID" readonly value="CU011" />
+
+                        <label>Customer Name</label>
+                        <input type="text" id="custName" placeholder="Enter customer name" />
+
+                        <label>Customer NIC NO.</label>
+                        <input type="text" id="custNIC" placeholder="Enter NIC number" />
+
+                        <label>Customer Phone NO.</label>
+                        <input type="text" id="custPhone" placeholder="+94 71 589 6314" />
+
+                        <label>Address</label>
+                        <textarea id="custAddress" rows="3" placeholder="Enter full address"></textarea>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button onclick="hideModal()" class="btn-cancel">Cancel</button>
+                        <button onclick="resetCustomerForm()" class="btn-reset">Reset</button>
+                        <button onclick="saveCustomer()" class="btn-save">Save</button>
+                    </div>
+            </div>
+        </div>
+
+    7</div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
