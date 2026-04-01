@@ -69,53 +69,16 @@
       dateEl.textContent = new Date().toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
     }
 
-    // ==================== PLACE ORDER FUNCTIONS ====================
-    function renderCustomerSelect() {
-      const select = document.getElementById('customerSelect');
-      select.innerHTML = '<option value="">Select Customer</option>';
-      customers.forEach(c => {
-        const opt = document.createElement('option');
-        opt.value = c.id;
-        opt.textContent = `${c.name} (${c.phone})`;
-        select.appendChild(opt);
-      });
-    }
-
-    function addItemToOrder() {
-      alert("Item selection modal will open here (Add your modal code)");
-      // You can expand this later
-    }
-
-    function calculateTotal() {
-      let subtotal = 50000; // Example
-      document.getElementById('subTotal').textContent = `Rs. ${subtotal.toLocaleString()}`;
-      document.getElementById('grandTotal').textContent = `Rs. ${subtotal.toLocaleString()}`;
-    }
-
-    function completePurchase() {
-      if (currentOrder.length === 0) return alert("No items added!");
-      alert("✅ Order Completed Successfully!");
-      currentOrder = [];
-    }
-
-    function clearOrder() {
-      if (confirm("Clear order?")) currentOrder = [];
-    }
-
-    // Placeholder functions
-    function loadCustomerInfo() {}
-    function renderProducts() { console.log("Products rendered"); }
-    function renderCustomers() { console.log("Customers rendered"); }
-
     // ==================== INITIALIZE ====================
     window.onload = () => {
       initSidebar();
       updateDate();
+      renderProducts();
+      renderCustomers();
     };
 
     // ==================== CUSTOMERS ====================
 
-   // ==================== CUSTOMERS CRUD ====================
 
 let customers = [
   { id: "CU001", name: "Kasun Perera", nic: "12498345785", address: "72,Galle Road, Galle", phone: "+94 71 589 6314" },
@@ -148,7 +111,38 @@ function renderCustomers() {
   });
 }
 
-// Show Add Customer Modal
+function showAddCustomerModal() {
+  editingCustomerId = null;
+  document.getElementById('addCustomerModal').classList.remove('hidden');
+  document.querySelector('#addCustomerModal .modal-content h2').textContent = 'Add Customer';
+  resetCustomerForm();
+}
+
+function getNextOrderId() {
+  const seed = String(new Date().getTime()).slice(-6);
+  return `ORD${seed}`;
+}
+
+function renderCustomerSelect() {
+  populatePlaceOrderDropdowns();
+
+  const orderId = document.getElementById('orderId');
+  const orderDate = document.getElementById('orderDate');
+  if (orderId) orderId.value = getNextOrderId();
+  if (orderDate) orderDate.value = new Date().toISOString().split('T')[0];
+
+  resetItem();
+  resetForm();
+  calculateTotal();
+}
+
+
+function searchCustomers() {
+  const term = document.getElementById('customerSearch').value.toLowerCase();
+  document.querySelectorAll('#customersTableBody tr').forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
+  });
+}
 
 // Edit Customer
 function editCustomer(id) {
@@ -230,13 +224,13 @@ function hideModal() {
 }
 
 // ==================== PRODUCTS DATA ====================
-// ==================== PRODUCTS CRUD ====================
+
 let products = [
-  { sku: "PT001", name: "Lenovo IdeaPad 3", category: "Computers", stock: 100, price: 500 },
-  { sku: "PT002", name: "Beats Pro", category: "Electronics", stock: 140, price: 1500 },
-  { sku: "PT004", name: "Apple Series 5 Watch", category: "Electronics", stock: 450, price: 1000 },
-  { sku: "PT005", name: "Amazon Echo Dot", category: "Electronics", stock: 320, price: 1200 },
-  { sku: "PT008", name: "iPhone 14 Pro", category: "Phone", stock: 630, price: 100 }
+  { sku: "PT001", name: "Lenovo IdeaPad 3", category: "Computers", stock: 100, price: 500, onOrderQty: 0 },
+  { sku: "PT002", name: "Beats Pro", category: "Electronics", stock: 140, price: 1500, onOrderQty: 0 },
+  { sku: "PT004", name: "Apple Series 5 Watch", category: "Electronics", stock: 450, price: 1000, onOrderQty: 0 },
+  { sku: "PT005", name: "Amazon Echo Dot", category: "Electronics", stock: 320, price: 1200, onOrderQty: 0 },
+  { sku: "PT008", name: "iPhone 14 Pro", category: "Phone", stock: 630, price: 100, onOrderQty: 0 }
 ];
 
 let editingProductSKU = null;
@@ -253,8 +247,7 @@ function renderProducts() {
       <td>${p.name}</td>
       <td>${p.category}</td>
       <td>${p.stock}</td>
-      <td>05</td>
-      <td>Rs. ${p.price}</td>
+      <td>Rs. ${(p.stock * p.price).toFixed(2)}</td>
       <td class="actions">
         <button onclick="viewProduct('${p.sku}')" class="action-btn view" title="View">👁</button>
         <button onclick="editProduct('${p.sku}')" class="action-btn edit" title="Edit">✏️</button>
@@ -355,4 +348,244 @@ function searchProducts() {
   document.querySelectorAll('#productsTableBody tr').forEach(row => {
     row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
   });
+}
+
+//====place order====
+
+// Place Order Variables
+let currentOrder = [];
+
+function adjustStock(sku, qtyChange) {
+  const prod = products.find(p => p.sku === sku);
+  if (!prod) return;
+  prod.stock = Math.max(0, prod.stock + qtyChange);
+}
+
+function restoreStockFromOrder(orderItems) {
+  orderItems.forEach(item => {
+    adjustStock(item.sku, item.qty);
+  });
+}
+
+// Populate Dropdowns
+function populatePlaceOrderDropdowns() {
+  const custSelect = document.getElementById('customerSelect');
+  if (custSelect) {
+    custSelect.innerHTML = '<option value="">Select Customer</option>';
+    customers.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.id;
+      opt.textContent = `${c.name} (${c.id})`;
+      custSelect.appendChild(opt);
+    });
+  }
+
+  const itemSelect = document.getElementById('itemCode');
+  if (itemSelect) {
+    itemSelect.innerHTML = '<option value="">Select Item</option>';
+    products.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.sku;
+      opt.textContent = `${p.sku} - ${p.name}`;
+      itemSelect.appendChild(opt);
+    });
+  }
+}
+
+// Load Customer
+function loadCustomerInfo() {
+  const id = document.getElementById('customerSelect').value;
+  const cust = customers.find(c => c.id === id);
+  if (cust) {
+    const targetName = document.getElementById('orderCustName');
+    const targetNIC = document.getElementById('orderCustNIC');
+    const targetAddress = document.getElementById('orderCustAddress');
+
+    if (targetName) targetName.value = cust.name;
+    if (targetNIC) targetNIC.value = cust.nic;
+    if (targetAddress) targetAddress.value = cust.address;
+  } else {
+    document.getElementById('orderCustName').value = '';
+    document.getElementById('orderCustNIC').value = '';
+    document.getElementById('orderCustAddress').value = '';
+  }
+}
+
+
+// Load Item
+function loadItemInfo() {
+  const sku = document.getElementById('itemCode').value;
+  const prod = products.find(p => p.sku === sku);
+  if (prod) {
+    document.getElementById('itemName').value = prod.name;
+    document.getElementById('unitPrice').value = prod.price;
+    document.getElementById('qtyOnHand').value = prod.stock;
+    calculateItemAmount();
+  }
+}
+
+function calculateItemAmount() {
+  const price = parseFloat(document.getElementById('unitPrice').value) || 0;
+  const qty = parseInt(document.getElementById('qty').value) || 0;
+  document.getElementById('itemAmount').value = (price * qty).toFixed(2);
+}
+
+// Add Item
+function addItemToOrder() {
+  const sku = document.getElementById('itemCode').value;
+  const prod = products.find(p => p.sku === sku);
+  if (!prod) return alert("Please select an item");
+
+  let qty = parseInt(document.getElementById('qty').value, 10);
+  if (isNaN(qty) || qty <= 0) {
+    qty = 1;
+    document.getElementById('qty').value = '1';
+  }
+
+  if (qty > prod.stock) return alert(`Insufficient stock. Available: ${prod.stock}`);
+
+  const amount = parseFloat(document.getElementById('itemAmount').value) || 0;
+
+  const existingItem = currentOrder.find(item => item.sku === sku);
+  if (existingItem) {
+    existingItem.qty += qty;
+    existingItem.amount = (parseFloat(existingItem.amount) + amount).toFixed(2);
+  } else {
+    currentOrder.push({ sku, name: prod.name, qty, amount });
+  }
+
+  prod.onOrderQty = (prod.onOrderQty || 0) + qty;
+
+  adjustStock(sku, -qty);
+  renderProducts();
+  document.getElementById('qtyOnHand').value = prod.stock;
+  renderOrderTable();
+  calculateTotal();
+}
+
+function renderOrderTable() {
+  const tbody = document.getElementById('orderTableBody');
+  tbody.innerHTML = '';
+  currentOrder.forEach((item, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${item.sku}</td>
+      <td>${item.name}</td>
+      <td>${item.qty}</td>
+      <td>Rs. ${item.amount}</td>
+      <td><button onclick="removeItem(${i})" style="color:#ef4444;">🗑</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function removeItem(index) {
+  const item = currentOrder[index];
+  if (item) {
+    adjustStock(item.sku, item.qty);
+    const prod = products.find(p => p.sku === item.sku);
+    if (prod) prod.onOrderQty = Math.max(0, (prod.onOrderQty || 0) - item.qty);
+  }
+  currentOrder.splice(index, 1);
+  renderProducts();
+  renderOrderTable();
+  calculateTotal();
+}
+
+function calculateTotal() {
+  let subTotal = currentOrder.reduce((sum, item) => sum + item.amount, 0);
+  const discount = parseFloat(document.getElementById('discount').value) || 0;
+  const total = subTotal * (1 - discount / 100);
+
+  const subTotalDisplay = document.getElementById('subTotalInput');
+  const totalDisplay = document.getElementById('totalAll');
+  if (subTotalDisplay) subTotalDisplay.value = `Rs. ${subTotal.toFixed(2)}`;
+  if (totalDisplay) totalDisplay.value = `Rs. ${total.toFixed(2)}`;
+
+  const totalAmountField = document.getElementById('totalAmount');
+  if (totalAmountField) totalAmountField.textContent = `Rs. ${total.toFixed(2)}`;
+
+  calculateBalance();
+}
+
+function calculateBalance() {
+  const totalText = document.getElementById('totalAll') ? document.getElementById('totalAll').value : 'Rs. 0.00';
+  const total = parseFloat(totalText.replace('Rs. ', '')) || 0;
+  const cash = parseFloat(document.getElementById('cash').value) || 0;
+  const balanceValue = (cash - total).toFixed(2);
+
+  const balanceDisplay = document.getElementById('balanceInput');
+  if (balanceDisplay) balanceDisplay.value = `Rs. ${balanceValue}`;
+}
+
+function completePurchase() {
+  if (currentOrder.length === 0) return alert("No items added!");
+  const totalText = document.getElementById('totalAll').value || 'Rs. 0.00';
+  alert(`✅ Order Completed Successfully!\nTotal: ${totalText}`);
+  currentOrder.forEach(item => {
+    const prod = products.find(p => p.sku === item.sku);
+    if (prod) prod.onOrderQty = Math.max(0, (prod.onOrderQty || 0) - item.qty);
+  });
+  currentOrder = [];
+  renderProducts();
+  renderOrderTable();
+  calculateTotal();
+  resetForm();
+  resetItem();
+  document.getElementById('cash').value = 0;
+  calculateBalance();
+}
+
+function voidOrder() {
+  if (confirm("Void this order?")) {
+    restoreStockFromOrder(currentOrder);
+    currentOrder.forEach(item => {
+      const prod = products.find(p => p.sku === item.sku);
+      if (prod) prod.onOrderQty = Math.max(0, (prod.onOrderQty || 0) - item.qty);
+    });
+    currentOrder = [];
+    renderProducts();
+    renderOrderTable();
+    calculateTotal();
+  }
+}
+
+function cancelOrder() {
+  if (confirm("Cancel this order?")) location.reload();
+}
+
+function resetForm() {
+  const custSelect = document.getElementById('customerSelect');
+  if (custSelect) custSelect.value = '';
+
+  const targetName = document.getElementById('orderCustName');
+  const targetNIC = document.getElementById('orderCustNIC');
+  const targetAddress = document.getElementById('orderCustAddress');
+
+  if (targetName) targetName.value = '';
+  if (targetNIC) targetNIC.value = '';
+  if (targetAddress) targetAddress.value = '';
+}
+
+function resetItem() {
+  document.getElementById('itemCode').value = '';
+  document.getElementById('itemName').value = '';
+  document.getElementById('unitPrice').value = '';
+  document.getElementById('qtyOnHand').value = '';
+  document.getElementById('qty').value = '1';
+  document.getElementById('itemAmount').value = '';
+}
+
+function clearAllItems() {
+  if (confirm("Clear all items?")) {
+    restoreStockFromOrder(currentOrder);
+    currentOrder.forEach(item => {
+      const prod = products.find(p => p.sku === item.sku);
+      if (prod) prod.onOrderQty = Math.max(0, (prod.onOrderQty || 0) - item.qty);
+    });
+    currentOrder = [];
+    renderProducts();
+    renderOrderTable();
+    calculateTotal();
+  }
 }

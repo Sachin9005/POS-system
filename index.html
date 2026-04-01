@@ -88,8 +88,59 @@
       </div>
 
       <!-- PLACE ORDER SECTION -->
-        <div id="placeOrderSection" class="content-section hidden">
-            <h1>Place New Order</h1>        
+        <div id="place-orderSection" class="content-section hidden">
+            <h1>Place New Order</h1>
+
+            <div class="place-order-top">
+                <div class="card invoice-card">
+                    <h2>Invoice Details</h2>
+                    <div class="form-row"><label>Order Id</label><input id="orderId" type="text" readonly /></div>
+                    <div class="form-row"><label>Date</label><input id="orderDate" type="date" readonly /></div>
+                    <div class="form-row"><label>Customer Id</label><select id="customerSelect" onchange="loadCustomerInfo()"></select></div>
+                    <div class="form-row"><label>Customer Name</label><input id="orderCustName" type="text" readonly /></div>
+                    <div class="form-row"><label>NIC NO.</label><input id="orderCustNIC" type="text" readonly /></div>
+                    <div class="form-row"><label>Address</label><textarea id="orderCustAddress" rows="2" readonly></textarea></div>
+                    <div class="form-row button-row">
+                        <button onclick="resetForm()" class="btn-reset">Reset</button>
+                        <button onclick="cancelOrder()" class="btn-cancel">Cancel</button>
+                    </div>
+                </div>
+
+                <div class="card item-card">
+                    <h2>Item Select</h2>
+                    <div class="form-row"><label>Item Code</label><select id="itemCode" onchange="loadItemInfo()"></select></div>
+                    <div class="form-row"><label>Item Name</label><input id="itemName" type="text" readonly /></div>
+                    <div class="form-row"><label>Unit Price (Rs.)</label><input id="unitPrice" type="number" readonly /></div>
+                    <div class="form-row"><label>Qty On Hand</label><input id="qtyOnHand" type="number" readonly /></div>
+                    <div class="form-row"><label>QTY</label><input id="qty" type="number" min="1" value="1" onchange="calculateItemAmount()" /></div>
+                    <div class="form-row"><label>Amount</label><input id="itemAmount" type="text" readonly /></div>
+                    <div class="form-row button-row">
+                        <button onclick="addItemToOrder()" class="btn-save">Add Item</button>
+                        <button onclick="resetItem()" class="btn-reset">Reset</button>
+                        <button onclick="clearAllItems()" class="btn-delete">Clear all</button>
+                    </div>
+                </div>
+
+                <div class="card totals-card">
+                    <h2>Totals</h2>
+                    <div class="form-row"><label>Total</label><input id="totalAll" type="text" readonly /></div>
+                    <div class="form-row"><label>Sub Total</label><input id="subTotalInput" type="text" readonly /></div>
+                    <div class="form-row"><label>Discount (%)</label><input id="discount" type="number" value="0" min="0" max="100" onchange="calculateTotal()" /></div>
+                    <div class="form-row"><label>Cash</label><input id="cash" type="number" value="0" min="0" onchange="calculateBalance()" /></div>
+                    <div class="form-row"><label>Balance</label><input id="balanceInput" type="text" readonly /></div>
+                    <div class="form-row button-row">
+                        <button onclick="completePurchase()" class="btn-save">Purchase</button>
+                        <button onclick="voidOrder()" class="btn-delete">Void</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="order-table">
+                    <thead><tr><th>Order Id</th><th>Product Name</th><th>Purchase Qty</th><th>Purchase Amount</th><th>Actions</th></tr></thead>
+                    <tbody id="orderTableBody"></tbody>
+                </table>
+            </div>
         </div>
 
         <!-- PRODUCTS SECTION -->
@@ -113,8 +164,7 @@
                     <th>Product Name</th>
                     <th>Category</th>
                     <th>InStock Qty</th>
-                    <th>Purchase Qty</th>
-                    <th>Purchase Amount Rs.</th>
+                    <th>Total Value Rs.</th>
                     <th>Actions</th>
                     </tr>
                 </thead>
@@ -181,13 +231,7 @@
                         <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="customersTableBody">
-                        <td>
-                            <button onclick="viewCustomer('${cust.id}')" class="action-btn view">👁</button>
-                            <button onclick="editCustomer('${cust.id}')" class="action-btn edit">✏️</button>
-                            <button onclick="deleteCustomer('${cust.id}')" class="action-btn delete">🗑</button>
-                        </td>
-                    </tbody>
+                    <tbody id="customersTableBody"></tbody>
                 </table>
                 </div>
 
@@ -231,7 +275,7 @@
             </div>
         </div>
 
-    7</div>
+    </div>
   </div>
 
   <script src="script.js"></script>
