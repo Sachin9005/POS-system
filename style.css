@@ -659,6 +659,185 @@ input[readonly], textarea[readonly] {
   color: #e2e8f0;
 }
 
+/* Overall content section styling */
+.content-section {
+  padding: 20px 20px 35px;
+  min-height: calc(100vh - 100px);
+  background: transparent;
+}
+
+.place-order-top {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(250px, 1fr));
+  gap: 18px;
+  align-items: start;
+}
+
+.card {
+  min-height: 470px;
+  max-width: 100%;
+}
+
+.card .form-row {
+  margin-bottom: 10px;
+}
+
+.card .form-row label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.card input,
+.card select,
+.card textarea {
+  border: 1px solid #334155;
+  border-radius: 8px;
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+.table-container {
+  margin-top: 14px;
+  border: 1px solid #334155;
+  border-radius: 12px;
+}
+
+.order-table th,
+.order-table td,
+.products-table th,
+.products-table td,
+.customers-table th,
+.customers-table td {
+  font-size: 14px;
+  padding: 10px 12px;
+}
+
+.order-table th,
+.products-table th,
+.customers-table th {
+  color: #f97316;
+  border-bottom: 1px solid #334155;
+}
+
+.order-table tr:hover,
+.products-table tr:hover,
+.customers-table tr:hover {
+  background: #152033;
+}
+
+/* Button scaling */
+.button-row button,
+.modal-footer button,
+.add-btn,
+.btn-group .btn {
+  min-height: 42px;
+}
+
+/* Responsive overrides for place order */
+@media (max-width: 1110px) {
+  .place-order-top {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    min-height: 380px;
+  }
+}
+
+/* Pagination styling */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0 24px;
+  padding: 8px 0;
+}
+
+.pagination button {
+  min-width: 36px;
+  min-height: 36px;
+  border: 1px solid #334155;
+  background: #1e2937;
+  color: #e2e8f0;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination button:hover {
+  background: #334155;
+  border-color: #f97316;
+  color: #fff;
+}
+
+.pagination button.active {
+  background: #f97316;
+  border-color: #f97316;
+  color: #0f172a;
+}
+
+.pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Fluid layout */
+body {
+  overflow: auto;
+}
+
+.main-content {
+  margin-left: 260px;
+  min-height: 100vh;
+  overflow-y: auto;
+  padding: 20px 24px 40px;
+}
+
+.topbar {
+  padding: 0 20px;
+}
+
+.search-bar input {
+  width: min(100%, 420px);
+}
+
+.stats-grid {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.chart-section {
+  overflow-x: auto;
+}
+
+.card {
+  max-width: 100%;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.order-table, .products-table, .customers-table {
+  min-width: 700px;
+}
+
+@media (max-width: 1200px) {
+  .sidebar {
+    width: 220px;
+  }
+
+  .main-content {
+    margin-left: 220px;
+  }
+
+  .topbar {
+    padding: 0 16px;
+  }
+}
+
+
 .modal {
   position: fixed;
   top: 0; left: 0;
