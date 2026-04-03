@@ -1,5 +1,4 @@
     // ==================== NAVIGATION ====================
-
     function navigate(page) {
       document.querySelectorAll('.content-section').forEach(sec => sec.classList.add('hidden'));
       document.querySelectorAll('.sidebar ul li').forEach(item => item.classList.remove('active'));
@@ -22,26 +21,14 @@
       });
     }
 
-    // ==================== LOGIN ====================
-    
-    function login() {
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value;
-
-      if (username === 'admin' && password === 'admin') {
-        document.getElementById('loginPage').classList.add('hidden');
-        document.getElementById('mainApp').classList.remove('hidden');
-        navigate('dashboard');
-        updateDate();
-        initChart();
-      } else {
-        alert('Invalid username or password. Try again.');
-        document.getElementById('password').value = '';
-        document.getElementById('username').value = '';
-      }
-    }
-
     // ==================== LOGIN / LOGOUT ====================
+    function login() {
+      document.getElementById('loginPage').classList.add('hidden');
+      document.getElementById('mainApp').classList.remove('hidden');
+      navigate('dashboard');
+      updateDate();
+      initChart();
+    }
 
     function logout() {
       document.getElementById('mainApp').classList.add('hidden');
