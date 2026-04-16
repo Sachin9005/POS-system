@@ -1,5 +1,5 @@
 import { products, renderProducts } from './itemController.js';
-import { customers } from './customersController.js';
+import { customers } from '../db/DB.js';
 
 //====place order====
 

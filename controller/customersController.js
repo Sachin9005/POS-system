@@ -1,11 +1,14 @@
-    // ==================== CUSTOMERS ====================
+import { CustomerModel } from '../model/CustomerModel.js';
 
+const customerRegex = {
+  name: /^[a-zA-Z\s.\-']{2,100}$/,
+  email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+  phone: /^(?:\+94|0)[0-9]{9}$/,
+  nic: /^(\d{9}[VX]|\d{12})$/i,
+  address: /^[a-zA-Z0-9\s,.\-\/#]{5,200}$/
+};
 
-export let customers = [
-  { id: "CU001", name: "Kasun Perera", nic: "12498345785", address: "72,Galle Road, Galle", phone: "+94 71 589 6314" },
-  { id: "CU002", name: "Nimali Silva", nic: "13178964582", address: "72,Galle Road, Galle", phone: "+94 71 589 6314" },
-  { id: "CU003", name: "Ruwan Fernando", nic: "12796183487", address: "72,Galle Road, Galle", phone: "+94 71 589 6314" }
-];
+const customerModel = new CustomerModel();
 
 let editingCustomerId = null;   // To track which customer is being edited
 
@@ -13,23 +16,44 @@ export function renderCustomers() {
   const tbody = document.getElementById('customersTableBody');
   tbody.innerHTML = '';
 
-  customers.forEach(cust => {
+  customerModel.getAll().forEach(cus => {
     const row = document.createElement('tr');
     row.innerHTML = `
-      <td>${cust.id}</td>
-      <td>${cust.name}</td>
-      <td>${cust.nic}</td>
-      <td>${cust.address}</td>
-      <td>${cust.phone}</td>
+      <td>${cus.id}</td>
+      <td>${cus.name}</td>
+      <td>${cus.nic}</td>
+      <td>${cus.address}</td>
+      <td>${cus.phone}</td>
       <td><span class="status-active">Active</span></td>
       <td class="actions">
-        <button onclick="viewCustomer('${cust.id}')" class="action-btn view" title="View">👁</button>
-        <button onclick="editCustomer('${cust.id}')" class="action-btn edit" title="Edit">✏️</button>
-        <button onclick="deleteCustomer('${cust.id}')" class="action-btn delete" title="Delete">🗑</button>
+        <button onclick="viewCustomer('${cus.id}')" class="action-btn view" title="View">👁</button>
+        <button onclick="editCustomer('${cus.id}')" class="action-btn edit" title="Edit">✏️</button>
+        <button onclick="deleteCustomer('${cus.id}')" class="action-btn delete" title="Delete">🗑</button>
       </td>
     `;
     tbody.appendChild(row);
   });
+}
+
+// View Customer
+function viewCustomer(id) {
+  const customer = customerModel.getById(id);
+  if (customer) {
+    alert(`Customer Details:\n\nID: ${customer.id}\nName: ${customer.name}\nNIC: ${customer.nic}\nPhone: ${customer.phone}\nAddress: ${customer.address}`);
+  }
+}
+
+// Delete Customer
+function deleteCustomer(id) {
+  if (confirm(`Are you sure you want to delete Customer ${id}?`)) {
+    let isDeleted = customerModel.delete(id);
+    if (!isDeleted) {
+      alert("Error: Customer not found!");
+      return;
+    }
+    renderCustomers();
+    alert("Customer deleted successfully!");
+  }
 }
 
 function showAddCustomerModal() {
@@ -56,44 +80,43 @@ function editCustomer(id) {
   document.getElementById('addCustomerModal').classList.remove('hidden');
   document.querySelector('.modal-content h2').textContent = "Edit Customer";
 
-  document.getElementById('custID').value = customer.id;
-  document.getElementById('custName').value = customer.name;
-  document.getElementById('custNIC').value = customer.nic;
-  document.getElementById('custPhone').value = customer.phone;
-  document.getElementById('custAddress').value = customer.address;
-}
-
-// View Customer (Simple Alert for now)
-function viewCustomer(id) {
-  const customer = customers.find(c => c.id === id);
-  if (customer) {
-    alert(`Customer Details:\n\nID: ${customer.id}\nName: ${customer.name}\nNIC: ${customer.nic}\nPhone: ${customer.phone}\nAddress: ${customer.address}`);
-  }
-}
-
-// Delete Customer
-function deleteCustomer(id) {
-  if (confirm(`Are you sure you want to delete Customer ${id}?`)) {
-    customers = customers.filter(c => c.id !== id);
-    renderCustomers();
-    alert("Customer deleted successfully!");
-  }
+  document.getElementById('cusID').value = customer.id;
+  document.getElementById('cusName').value = customer.name;
+  document.getElementById('cusNIC').value = customer.nic;
+  document.getElementById('cusPhone').value = customer.phone;
+  document.getElementById('cusAddress').value = customer.address;
 }
 
 // Save Customer (Add or Update)
 function saveCustomer() {
-  const name = document.getElementById('custName').value.trim();
-  if (!name) {
-    alert("Customer Name is required!");
+  const name = document.getElementById('cusName').value.trim();
+  const nic = document.getElementById('cusNIC').value.trim();
+  const phone = document.getElementById('cusPhone').value.trim();
+  const address = document.getElementById('cusAddress').value.trim();
+
+  if (!customerRegex.name.test(name)) {
+    alert("Invalid name!");
+    return;
+  }
+  if (!customerRegex.nic.test(nic)) {
+    alert("Invalid NIC!");
+    return;
+  }
+  if (!customerRegex.phone.test(phone)) {
+    alert("Invalid phone number!");
+    return;
+  }
+  if (!customerRegex.address.test(address)) {
+    alert("Invalid address!");
     return;
   }
 
   const customerData = {
     id: editingCustomerId || "CU" + String(customers.length + 1).padStart(3, '0'),
     name: name,
-    nic: document.getElementById('custNIC').value || "N/A",
-    phone: document.getElementById('custPhone').value || "+94 71 000 0000",
-    address: document.getElementById('custAddress').value || "No address provided"
+    nic: nic,
+    phone: phone,
+    address: address
   };
 
   if (editingCustomerId) {
@@ -102,7 +125,7 @@ function saveCustomer() {
     if (index !== -1) customers[index] = customerData;
   } else {
     // Add new customer
-    customers.unshift(customerData);
+    customerModel.save(customerData);
   }
 
   hideModal();
@@ -112,11 +135,11 @@ function saveCustomer() {
 
 // Reset Form
 function resetCustomerForm() {
-  document.getElementById('custID').value = editingCustomerId || "CU" + String(customers.length + 1).padStart(3, '0');
-  document.getElementById('custName').value = '';
-  document.getElementById('custNIC').value = '';
-  document.getElementById('custPhone').value = '';
-  document.getElementById('custAddress').value = '';
+  document.getElementById('cusID').value = editingCustomerId || "CU" + String(customers.length + 1).padStart(3, '0');
+  document.getElementById('cusName').value = '';
+  document.getElementById('cusNIC').value = '';
+  document.getElementById('cusPhone').value = '';
+  document.getElementById('cusAddress').value = '';
 }
 
 // Hide Modal
