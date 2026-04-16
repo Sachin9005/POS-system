@@ -19,7 +19,7 @@
       
       <input type="text" id="username" placeholder="Username" />
       <input type="password" id="password" placeholder="Password" />
-      <button onclick="login()">Login</button>
+      <button type="submit" id="loginBtn">Login</button>
       <p class="demo-text">Demo: admin / admin</p>
     </div>
   </div>
@@ -41,7 +41,7 @@
       </ul>
       <div class="sidebar-bottom">
         <div><i class="fas fa-cog"></i> General Settings</div>
-        <div onclick="logout()" style="cursor:pointer"><i class="fas fa-sign-out-alt"></i> Logout</div>
+        <div id="logoutBtn" style="cursor:pointer"><i class="fas fa-sign-out-alt"></i> Logout</div>
       </div>
     </div>
 
@@ -257,7 +257,7 @@
             <!-- ADD CUSTOMER MODAL -->
             <div id="addCustomerModal" class="modal hidden">
                 <div class="modal-content">
-                    <h2>Item Select</h2> <!-- Note: Screenshot says "Item Select" but it's for Customer -->
+                    <h2>Add Customer</h2>
                     <div class="modal-body">
                         <label>Customer ID</label>
                         <input type="text" id="custID" readonly value="CU011" />
@@ -286,6 +286,6 @@
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
