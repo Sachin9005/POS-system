@@ -72,19 +72,23 @@ function searchCustomers() {
 
 // Edit Customer
 function editCustomer(id) {
-  const customer = customers.find(c => c.id === id);
-  if (!customer) return;
+  const customer = customerModel.getById(id);
+  if (!customer) {
+    alert("Error: Customer not found!");
+    return;
+  }
 
   editingCustomerId = id;
-
   document.getElementById('addCustomerModal').classList.remove('hidden');
-  document.querySelector('.modal-content h2').textContent = "Edit Customer";
-
+  document.querySelector('#addCustomerModal .modal-content h2').textContent = 'Edit Customer';
+  
   document.getElementById('cusID').value = customer.id;
   document.getElementById('cusName').value = customer.name;
   document.getElementById('cusNIC').value = customer.nic;
   document.getElementById('cusPhone').value = customer.phone;
   document.getElementById('cusAddress').value = customer.address;
+  
+  
 }
 
 // Save Customer (Add or Update)
@@ -112,7 +116,6 @@ function saveCustomer() {
   }
 
   const customerData = {
-    id: editingCustomerId || "CU" + String(customers.length + 1).padStart(3, '0'),
     name: name,
     nic: nic,
     phone: phone,
@@ -120,22 +123,19 @@ function saveCustomer() {
   };
 
   if (editingCustomerId) {
-    // Update existing customer
-    const index = customers.findIndex(c => c.id === editingCustomerId);
-    if (index !== -1) customers[index] = customerData;
+    customerModel.update(editingCustomerId, customerData);
   } else {
-    // Add new customer
     customerModel.save(customerData);
   }
 
   hideModal();
   renderCustomers();
-  alert(editingCustomerId ? "✅ Customer updated successfully!" : "✅ Customer added successfully!");
+  alert(editingCustomerId === null ? "Customer added successfully!" : "Customer updated successfully!");
 }
 
 // Reset Form
 function resetCustomerForm() {
-  document.getElementById('cusID').value = editingCustomerId || "CU" + String(customers.length + 1).padStart(3, '0');
+  document.getElementById('cusID').value = editingCustomerId || customerModel.createId();
   document.getElementById('cusName').value = '';
   document.getElementById('cusNIC').value = '';
   document.getElementById('cusPhone').value = '';

@@ -15,7 +15,10 @@ export class CustomerModel {
   }
 
   save(customerData) {
-    const newCustomer = { ...customerData, id: "CU" + String(customers.length + 1).padStart(3, '0') };
+    const newCustomer = {
+      id: "CU" + String(customers.length + 1).padStart(3, '0'),
+      ...customerData
+    };
     customers.push(newCustomer);
     return newCustomer;
   }
@@ -24,9 +27,9 @@ export class CustomerModel {
     const index = customers.findIndex(c => c.id === id);
     if (index !== -1) {
       customers[index] = { ...customers[index], ...customerData };
-      return customers[index];
+      return true;
     }
-    return null;
+    return false;
   }
 
   delete(id) {
@@ -36,5 +39,9 @@ export class CustomerModel {
       return true;
     }
     return false;
+  }
+
+  createId() {
+    return "CU" + String(customers.length + 1).padStart(3, '0');
   }
 }
