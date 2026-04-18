@@ -10,7 +10,7 @@ const customerRegex = {
 
 const customerModel = new CustomerModel();
 
-let editingCustomerId = null;   // To track which customer is being edited
+let editingCustomerId = null;
 
 export function renderCustomers() {
   const tbody = document.getElementById('customersTableBody');
@@ -56,20 +56,6 @@ function deleteCustomer(id) {
   }
 }
 
-function showAddCustomerModal() {
-  editingCustomerId = null;
-  document.getElementById('addCustomerModal').classList.remove('hidden');
-  document.querySelector('#addCustomerModal .modal-content h2').textContent = 'Add Customer';
-  resetCustomerForm();
-}
-
-function searchCustomers() {
-  const term = document.getElementById('customerSearch').value.toLowerCase();
-  document.querySelectorAll('#customersTableBody tr').forEach(row => {
-    row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
-  });
-}
-
 // Edit Customer
 function editCustomer(id) {
   const customer = customerModel.getById(id);
@@ -86,9 +72,7 @@ function editCustomer(id) {
   document.getElementById('cusName').value = customer.name;
   document.getElementById('cusNIC').value = customer.nic;
   document.getElementById('cusPhone').value = customer.phone;
-  document.getElementById('cusAddress').value = customer.address;
-  
-  
+  document.getElementById('cusAddress').value = customer.address; 
 }
 
 // Save Customer (Add or Update)
@@ -116,21 +100,53 @@ function saveCustomer() {
   }
 
   const customerData = {
+    id: editingCustomerId || customerModel.createId(),
     name: name,
     nic: nic,
     phone: phone,
     address: address
   };
 
+  let isSaved;
+  let isUpdated;
+
   if (editingCustomerId) {
-    customerModel.update(editingCustomerId, customerData);
+    isUpdated = customerModel.update(editingCustomerId, customerData);
+
+    if (isUpdated) {  
+      alert("Customer updated successfully!");
+    } else {
+      alert("Error updating customer!");
+    }
+
   } else {
-    customerModel.save(customerData);
+    isSaved = customerModel.save(customerData);
+
+    if (isSaved) {
+      alert("Customer added successfully!");
+    }else {
+      alert("Error saving customer!");
+    }
   }
 
   hideModal();
+  resetCustomerForm();
   renderCustomers();
-  alert(editingCustomerId === null ? "Customer added successfully!" : "Customer updated successfully!");
+}
+
+function showAddCustomerModal() {
+  editingCustomerId = null;
+  document.getElementById('addCustomerModal').classList.remove('hidden');
+  document.querySelector('#addCustomerModal .modal-content h2').textContent = 'Add Customer';
+  resetCustomerForm();
+}
+
+function searchCustomers() {
+  const term = document.getElementById('customerSearch').value.toLowerCase();
+  document.querySelectorAll('#customersTableBody tr').forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
+  });
+
 }
 
 // Reset Form
@@ -148,6 +164,8 @@ function hideModal() {
   editingCustomerId = null;
 }
 
+
+// assigns them as properties on the window object
 window.showAddCustomerModal = showAddCustomerModal;
 window.resetCustomerForm = resetCustomerForm;
 window.hideModal = hideModal;

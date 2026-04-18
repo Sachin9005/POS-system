@@ -15,12 +15,14 @@ export class CustomerModel {
   }
 
   save(customerData) {
-    const newCustomer = {
-      id: "CU" + String(customers.length + 1).padStart(3, '0'),
-      ...customerData
-    };
-    customers.push(newCustomer);
-    return newCustomer;
+    let len =  customers.length;
+    customers.push(customerData);
+
+    if (customers.length > len) {
+      return true;
+    }
+    return false;
+    
   }
 
   update(id, customerData) {
