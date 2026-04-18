@@ -21,8 +21,7 @@ export class CustomerModel {
     if (customers.length > len) {
       return true;
     }
-    return false;
-    
+    return false;    
   }
 
   update(id, customerData) {

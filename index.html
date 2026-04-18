@@ -212,7 +212,7 @@
             </div>
 
       <!-- CUSTOMERS SECTION -->
-       
+
         <div id="customersSection" class="content-section hidden">
             <div class="page-header">
                 <h1>Customers</h1>
@@ -254,6 +254,32 @@
                 </div>
             </div>
 
+            <!-- show customer details modal -->
+            <div id="showCustomerModal" class="modal hidden">
+                <div class="modal-content">
+                    <h2>Customer Details</h2>
+                    <div class="modal-body">
+                        <label>Customer ID</label>
+                        <input type="text" id="viewCusID" readonly />
+
+                        <label>Customer Name</label>
+                        <input type="text" id="viewCusName" readonly />
+
+                        <label>Customer NIC NO.</label>
+                        <input type="text" id="viewCusNIC" readonly />
+
+                        <label>Customer Phone NO.</label>
+                        <input type="text" id="viewCusPhone" readonly />
+
+                        <label>Address</label>
+                        <textarea id="viewCusAddress" rows="3" readonly></textarea>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button onclick="hideModal()" class="btn-cancel">Close</button>
+                    </div>
+                </div>
+            </div>
 
             <!-- ADD CUSTOMER MODAL -->
             <div id="addCustomerModal" class="modal hidden">
@@ -281,7 +307,7 @@
                         <button onclick="resetCustomerForm()" class="btn-reset">Reset</button>
                         <button onclick="saveCustomer()" class="btn-save">Save</button>
                     </div>
-            </div>
+              </div>    
         </div>
 
     </div>

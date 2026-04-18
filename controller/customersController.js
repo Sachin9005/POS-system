@@ -38,9 +38,13 @@ export function renderCustomers() {
 // View Customer
 function viewCustomer(id) {
   const customer = customerModel.getById(id);
-  if (customer) {
-    alert(`Customer Details:\n\nID: ${customer.id}\nName: ${customer.name}\nNIC: ${customer.nic}\nPhone: ${customer.phone}\nAddress: ${customer.address}`);
-  }
+  document.getElementById('viewCusID').value = customer.id;
+  document.getElementById('viewCusName').value = customer.name;
+  document.getElementById('viewCusNIC').value = customer.nic;
+  document.getElementById('viewCusPhone').value = customer.phone;
+  document.getElementById('viewCusAddress').value = customer.address;
+  document.getElementById('showCustomerModal').classList.remove('hidden');
+  
 }
 
 // Delete Customer
@@ -134,13 +138,7 @@ function saveCustomer() {
   renderCustomers();
 }
 
-function showAddCustomerModal() {
-  editingCustomerId = null;
-  document.getElementById('addCustomerModal').classList.remove('hidden');
-  document.querySelector('#addCustomerModal .modal-content h2').textContent = 'Add Customer';
-  resetCustomerForm();
-}
-
+// Search Customers
 function searchCustomers() {
   const term = document.getElementById('customerSearch').value.toLowerCase();
   document.querySelectorAll('#customersTableBody tr').forEach(row => {
@@ -158,9 +156,18 @@ function resetCustomerForm() {
   document.getElementById('cusAddress').value = '';
 }
 
+// Show Add Customer Modal
+function showAddCustomerModal() {
+  editingCustomerId = null;
+  document.getElementById('addCustomerModal').classList.remove('hidden');
+  document.querySelector('#addCustomerModal .modal-content h2').textContent = 'Add Customer';
+  resetCustomerForm();
+}
+
 // Hide Modal
 function hideModal() {
   document.getElementById('addCustomerModal').classList.add('hidden');
+  document.getElementById('showCustomerModal').classList.add('hidden');
   editingCustomerId = null;
 }
 
