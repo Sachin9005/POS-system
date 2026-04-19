@@ -3,7 +3,7 @@ import { customers } from '../db/DB.js';
 export class CustomerModel {
    getAll() {
     if (customers.length === 0) {
-
+      alert("No customers found!");
     }else {
         return customers;
     }

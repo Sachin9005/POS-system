@@ -164,7 +164,6 @@
                     <th>Product Name</th>
                     <th>Category</th>
                     <th>InStock Qty</th>
-                    <th>Total Value Rs.</th>
                     <th>Actions</th>
                     </tr>
                 </thead>
@@ -209,7 +208,34 @@
                 <button onclick="saveProduct()" class="btn-save">Save</button>
                 </div>
             </div>
+
+            <!-- show product details modal -->
+            <div id="showProductModal" class="modal hidden">
+                <div class="modal-content">
+                    <h2>Product Details</h2>  
+                </div>
+                <div class="modal-body">
+                    <label>Item Code (SKU)</label>
+                    <input type="text" id="viewProdSKU" readonly />
+
+                    <label>Product Name</label>
+                    <input type="text" id="viewProdName" readonly />
+
+                    <label>Category</label>
+                    <input type="text" id="viewProdCategory" readonly />
+
+                    <label>In Stock Quantity</label>
+                    <input type="number" id="viewProdStock" readonly />
+
+                    <label>Purchase Amount (Rs.)</label>
+                    <input type="number" id="viewProdPrice" readonly />
+                </div>
+                <div class="modal-footer">
+                    <button onclick="hideProductModal()" class="btn-cancel">Close</button>
+                </div>
+
             </div>
+          </div>
 
       <!-- CUSTOMERS SECTION -->
 

@@ -18,7 +18,6 @@ function login() {
         initSidebar();
         initChart();
         updateDate();
-        renderProducts();
         renderCustomers();
         alert("Login successful! Welcome, admin.");
     } else {

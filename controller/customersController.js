@@ -111,11 +111,10 @@ function saveCustomer() {
     address: address
   };
 
-  let isSaved;
-  let isUpdated;
+  
 
   if (editingCustomerId) {
-    isUpdated = customerModel.update(editingCustomerId, customerData);
+    let isUpdated = customerModel.update(editingCustomerId, customerData);
 
     if (isUpdated) {  
       alert("Customer updated successfully!");
@@ -124,7 +123,7 @@ function saveCustomer() {
     }
 
   } else {
-    isSaved = customerModel.save(customerData);
+    let isSaved = customerModel.save(customerData);
 
     if (isSaved) {
       alert("Customer added successfully!");

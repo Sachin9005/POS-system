@@ -1,28 +1,29 @@
-// ==================== PRODUCTS DATA ====================
+import { ItemModel } from "../model/ItemModel.js";
 
-export let products = [
-  { sku: "PT001", name: "Lenovo IdeaPad 3", category: "Computers", stock: 100, price: 500, onOrderQty: 0 },
-  { sku: "PT002", name: "Beats Pro", category: "Electronics", stock: 140, price: 1500, onOrderQty: 0 },
-  { sku: "PT004", name: "Apple Series 5 Watch", category: "Electronics", stock: 450, price: 1000, onOrderQty: 0 },
-  { sku: "PT005", name: "Amazon Echo Dot", category: "Electronics", stock: 320, price: 1200, onOrderQty: 0 },
-  { sku: "PT008", name: "iPhone 14 Pro", category: "Phone", stock: 630, price: 100, onOrderQty: 0 }
-];
+const itemModel = new ItemModel();
 
 let editingProductSKU = null;
+
+const itemRegex = {
+    itemSKU: /^[A-Z0-9\-_]{3,20}$/,
+    itemName: /^[a-zA-Z0-9\s&\-.,()]{3,100}$/,
+    category: /^[a-zA-Z\s&\-]{2,50}$/,
+    price: /^\d+(\.\d{1,2})?$/, 
+    quantity: /^\d+$/,
+};
 
 // Render Table
 export function renderProducts() {
   const tbody = document.getElementById('productsTableBody');
   tbody.innerHTML = '';
 
-  products.forEach(p => {
+  itemModel.getAll().forEach(p => {
     const row = document.createElement('tr');
     row.innerHTML = `
       <td>${p.sku}</td>
       <td>${p.name}</td>
       <td>${p.category}</td>
       <td>${p.stock}</td>
-      <td>Rs. ${(p.stock * p.price).toFixed(2)}</td>
       <td class="actions">
         <button onclick="viewProduct('${p.sku}')" class="action-btn view" title="View">👁</button>
         <button onclick="editProduct('${p.sku}')" class="action-btn edit" title="Edit">✏️</button>
@@ -35,16 +36,34 @@ export function renderProducts() {
 
 // View Product
 function viewProduct(sku) {
-  const p = products.find(x => x.sku === sku);
-  if (p) {
-    alert(`📦 Product Details:\n\nSKU: ${p.sku}\nName: ${p.name}\nCategory: ${p.category}\nStock: ${p.stock}\nPrice: Rs. ${p.price}`);
+  const p = itemModel.getBySKU(sku);
+  document.getElementById('viewProdSKU').value = p.sku;
+  document.getElementById('viewProdName').value = p.name;
+  document.getElementById('viewProdCategory').value = p.category;
+  document.getElementById('viewProdStock').value = p.stock;
+  document.getElementById('viewProdPrice').value = p.price;
+  document.getElementById('showProductModal').classList.remove('hidden');
+}
+
+function deleteProduct(sku) {
+  if (confirm(`Delete product ${sku}?`)) {
+   let isDeleted = itemModel.delete(sku);
+    if (!isDeleted) {
+      alert("Error: Product not found!");
+      return;
+    }
+    renderProducts();
+    alert("Product deleted successfully!"); 
   }
 }
 
 // Edit Product
 function editProduct(sku) {
-  const product = products.find(p => p.sku === sku);
-  if (!product) return;
+  const product = itemModel.getBySKU(sku);
+  if (!product)  {
+    alert("Error: Product not found!");
+    return;
+  }
 
   editingProductSKU = sku;
   document.getElementById('productModalTitle').textContent = "Edit Item";
@@ -57,61 +76,67 @@ function editProduct(sku) {
   document.getElementById('prodPrice').value = product.price;
 }
 
-// Add New Product
-function showAddProductModal() {
-  editingProductSKU = null;
-  document.getElementById('productModalTitle').textContent = "Add New Item";
-  document.getElementById('addProductModal').classList.remove('hidden');
-  resetProductForm();
-}
-
 // Save Product (Add or Update)
 function saveProduct() {
   const name = document.getElementById('prodName').value.trim();
-  if (!name) {
-    alert("Product Name is required!");
+  const category = document.getElementById('prodCategory').value.trim();
+  const stock = document.getElementById('prodStock').value.trim();
+  const price = document.getElementById('prodPrice').value.trim();
+
+  if (!itemRegex.itemName.test(name)) {
+    alert("Invalid product name!");
+    return;
+  }
+  if (category && !itemRegex.category.test(category)) {
+    alert("Invalid category!");
+    return;
+  }
+  if (!itemRegex.quantity.test(stock) || parseInt(stock) < 0) {
+    alert("Invalid stock quantity!");
+    return;
+  }
+  if (!itemRegex.price.test(price) || parseFloat(price) < 0) {
+    alert("Invalid price!");
     return;
   }
 
   const productData = {
-    sku: editingProductSKU || "PT" + String(100 + products.length).padStart(3, '0'),
+    sku: editingProductSKU || itemModel.createSKU(),
     name: name,
-    category: document.getElementById('prodCategory').value || "General",
-    stock: parseInt(document.getElementById('prodStock').value) || 0,
-    price: parseFloat(document.getElementById('prodPrice').value) || 0
+    category: category,
+    stock: parseInt(stock),
+    price: parseFloat(price)
   };
-
   if (editingProductSKU) {
-    // Update
-    const index = products.findIndex(p => p.sku === editingProductSKU);
-    if (index !== -1) products[index] = productData;
+    let isUpdated = itemModel.update(editingProductSKU, productData);
+
+    if (isUpdated) {
+      alert("Product updated successfully!");
+    }else {
+      alert("Error updating product!");
+    }
   } else {
-    // Add new
-    products.unshift(productData);
+    let isSaved = itemModel.save(productData);
+    if (isSaved) {
+      alert("Product added successfully!");
+    } else {
+      alert("Error adding product!");
+    }
   }
-
   hideProductModal();
-  renderProducts();
-  alert(editingProductSKU ? "✅ Product Updated Successfully!" : "✅ Product Added Successfully!");
-}
-
-// Delete Product
-function deleteProduct(sku) {
-  if (confirm(`Delete product ${sku}?`)) {
-    products = products.filter(p => p.sku !== sku);
-    renderProducts();
-    alert("✅ Product Deleted!");
-  }
+  renderProducts(); 
+  resetProductForm();
 }
 
 // Helper Functions
 function hideProductModal() {
   document.getElementById('addProductModal').classList.add('hidden');
+  document.getElementById('showProductModal').classList.add('hidden');
   editingProductSKU = null;
 }
 
 function resetProductForm() {
-  document.getElementById('prodSKU').value = editingProductSKU || "PT" + String(100 + products.length).padStart(3, '0');
+  document.getElementById('prodSKU').value = editingProductSKU || itemModel.createSKU();
   document.getElementById('prodName').value = '';
   document.getElementById('prodCategory').value = '';
   document.getElementById('prodStock').value = '';
@@ -123,6 +148,14 @@ function searchProducts() {
   document.querySelectorAll('#productsTableBody tr').forEach(row => {
     row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
   });
+}
+
+// Add New Product
+function showAddProductModal() {
+  editingProductSKU = null;
+  document.getElementById('productModalTitle').textContent = "Add New Item";
+  document.getElementById('addProductModal').classList.remove('hidden');
+  resetProductForm();
 }
 
 window.showAddProductModal = showAddProductModal;
