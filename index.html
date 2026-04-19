@@ -10,7 +10,7 @@
 </head>
 <body>
 
-<!-- LOGIN PAGE -->
+  <!-- LOGIN PAGE -->
   <div id="loginPage" class="login-page">
     <div class="login-box">
       <div class="logo-img">📱</div>
@@ -19,7 +19,7 @@
       
       <input type="text" id="username" placeholder="Username" />
       <input type="password" id="password" placeholder="Password" />
-      <button type="submit" id="loginBtn">Login</button>
+      <button id="loginBtn">Login</button>
       <p class="demo-text">Demo: admin / admin</p>
     </div>
   </div>
@@ -30,7 +30,7 @@
     <!-- SIDEBAR -->
     <div class="sidebar">
       <div class="logo">
-        <img src="assest/d2631f9f-ad02-41dd-9b36-ddfc71b96e7e.jpg" alt="Logo"/>
+        <img src="assest/d2631f9f-ad02-41dd-9b36-ddfc71b96e7e.jpg" alt="Mobile Store Logo"/>
         <h2>MOBILE STORE</h2>
       </div>
       <ul>
@@ -56,7 +56,7 @@
         <div class="top-right">
           <button class="icon-btn">🔔</button>
           <div class="user-info">
-            <img src="assest/profile_3569815.png" alt="User"/>
+            <img src="assest/profile_3569815.png" alt="User Profile"/>
             <div>
               <strong>User</strong><br>
               <small>Accountant</small>
@@ -143,198 +143,188 @@
             </div>
         </div>
 
-        <!-- PRODUCTS SECTION -->
-            <div id="productsSection" class="content-section hidden">
-                <div class="page-header">
-                    <h1>Products</h1>
-                    <button onclick="showAddProductModal()" class="add-btn">
-                    <i class="fas fa-plus"></i> Add Item
-                    </button>
-                </div>
+      <!-- PRODUCTS SECTION -->
+      <div id="productsSection" class="content-section hidden">
+        <div class="page-header">
+          <h1>Products</h1>
+          <button onclick="showAddProductModal()" class="add-btn">
+            <i class="fas fa-plus"></i> Add Item
+          </button>
+        </div>
 
-                <div class="customer-search">
-                    <input type="text" id="productSearch" placeholder="Search Item..." onkeyup="searchProducts()"/>
-                </div>
+        <div class="customer-search">
+          <input type="text" id="productSearch" placeholder="Search Item..." onkeyup="searchProducts()"/>
+        </div>
 
-            <div class="table-container">
-                <table class="products-table">
-                <thead>
-                    <tr>
-                    <th>SKU ID</th>
-                    <th>Product Name</th>
-                    <th>Category</th>
-                    <th>InStock Qty</th>
-                    <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="productsTableBody"></tbody>
-                </table>
-            </div>
-              <!-- Pagination -->
-                <div class="pagination">
-                    <button>‹</button>
-                    <button class="active">1</button>
-                    <button>2</button>
-                    <button>3</button>
-                    <button>›</button>
-                </div>
-            </div>
+        <div class="table-container">
+          <table class="products-table">
+            <thead>
+              <tr>
+                <th>SKU ID</th>
+                <th>Product Name</th>
+                <th>Category</th>
+                <th>InStock Qty</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="productsTableBody"></tbody>
+          </table>
+        </div>
 
-            <!-- ADD / EDIT PRODUCT MODAL -->
-            <div id="addProductModal" class="modal hidden">
-            <div class="modal-content">
-                <h2 id="productModalTitle">Add New Item</h2>
-                
-                <div class="modal-body">
-                <label>Item Code (SKU)</label>
-                <input type="text" id="prodSKU" readonly />
+        <!-- Pagination -->
+        <div class="pagination">
+          <button>‹</button>
+          <button class="active">1</button>
+          <button>2</button>
+          <button>3</button>
+          <button>›</button>
+        </div>
 
-                <label>Product Name</label>
-                <input type="text" id="prodName" placeholder="Enter product name" />
+        <!-- ADD / EDIT PRODUCT MODAL -->
+        <div id="addProductModal" class="modal hidden">
+          <div class="modal-content">
+            <h2 id="productModalTitle">Add New Item</h2>
+            <div class="modal-body">
+              <label>Item Code (SKU)</label>
+              <input type="text" id="prodSKU" readonly />
 
-                <label>Category</label>
-                <input type="text" id="prodCategory" placeholder="e.g. Phone, Laptop, Electronics" />
+              <label>Product Name</label>
+              <input type="text" id="prodName" placeholder="Enter product name" />
 
-                <label>In Stock Quantity</label>
-                <input type="number" id="prodStock" placeholder="0" />
+              <label>Category</label>
+              <input type="text" id="prodCategory" placeholder="e.g. Phone, Laptop, Electronics" />
 
-                <label>Purchase Amount (Rs.)</label>
-                <input type="number" id="prodPrice" placeholder="0.00" />
-                </div>
+              <label>In Stock Quantity</label>
+              <input type="number" id="prodStock" placeholder="0" />
 
-                <div class="modal-footer">
-                <button onclick="hideProductModal()" class="btn-cancel">Cancel</button>
-                <button onclick="resetProductForm()" class="btn-reset">Reset</button>
-                <button onclick="saveProduct()" class="btn-save">Save</button>
-                </div>
+              <label>Purchase Amount (Rs.)</label>
+              <input type="number" id="prodPrice" placeholder="0.00" />
             </div>
 
-            <!-- show product details modal -->
-            <div id="showProductModal" class="modal hidden">
-                <div class="modal-content">
-                    <h2>Product Details</h2>  
-                </div>
-                <div class="modal-body">
-                    <label>Item Code (SKU)</label>
-                    <input type="text" id="viewProdSKU" readonly />
-
-                    <label>Product Name</label>
-                    <input type="text" id="viewProdName" readonly />
-
-                    <label>Category</label>
-                    <input type="text" id="viewProdCategory" readonly />
-
-                    <label>In Stock Quantity</label>
-                    <input type="number" id="viewProdStock" readonly />
-
-                    <label>Purchase Amount (Rs.)</label>
-                    <input type="number" id="viewProdPrice" readonly />
-                </div>
-                <div class="modal-footer">
-                    <button onclick="hideProductModal()" class="btn-cancel">Close</button>
-                </div>
-
+            <div class="modal-footer">
+              <button onclick="hideProductModal()" class="btn-cancel">Cancel</button>
+              <button onclick="resetProductForm()" class="btn-reset">Reset</button>
+              <button onclick="saveProduct()" class="btn-save">Save</button>
             </div>
           </div>
+        </div>
+        <!-- show product details -->
+        <div id="showProductModal" class="modal hidden">
+          <div class="modal-content">
+            <h2>Product Details</h2>
+            <div class="modal-body">
+              <label>Item Code (SKU)</label>
+              <input type="text" id="viewProdSKU" readonly />
+
+              <label>Product Name</label>
+              <input type="text" id="viewProdName" readonly />
+
+              <label>Category</label>
+              <input type="text" id="viewProdCategory" readonly />
+
+              <label>In Stock Quantity</label>
+              <input type="number" id="viewProdStock" readonly />
+
+              <label>Purchase Amount (Rs.)</label>
+              <input type="number" id="viewProdPrice" readonly />
+            </div>
+            <div class="modal-footer">
+              <button onclick="hideProductModal()" class="btn-cancel">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- CUSTOMERS SECTION -->
-
-        <div id="customersSection" class="content-section hidden">
-            <div class="page-header">
-                <h1>Customers</h1>
-                <button onclick="showAddCustomerModal()" class="add-btn">
-                <i class="fas fa-plus"></i> Add Customer
-                </button>
-            </div>
-
-            <!-- Search Bar -->
-            <div class="customer-search">
-                <input type="text" id="customerSearch" placeholder="Search Customer..." onkeyup="searchCustomers()"/>
-            </div>
-
-            <!-- Customers Table -->
-            <div class="table-container">
-                <table class="customers-table">
-                    <thead>
-                        <tr>
-                        <th>Code ID</th>
-                        <th>Customer Name</th>
-                        <th>NIC NO.</th>
-                        <th>Address</th>
-                        <th>Phone</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="customersTableBody"></tbody>
-                </table>
-                </div>
-
-                <!-- Pagination -->
-                <div class="pagination">
-                    <button>‹</button>
-                    <button class="active">1</button>
-                    <button>2</button>
-                    <button>3</button>
-                    <button>›</button>
-                </div>
-            </div>
-
-            <!-- show customer details modal -->
-            <div id="showCustomerModal" class="modal hidden">
-                <div class="modal-content">
-                    <h2>Customer Details</h2>
-                    <div class="modal-body">
-                        <label>Customer ID</label>
-                        <input type="text" id="viewCusID" readonly />
-
-                        <label>Customer Name</label>
-                        <input type="text" id="viewCusName" readonly />
-
-                        <label>Customer NIC NO.</label>
-                        <input type="text" id="viewCusNIC" readonly />
-
-                        <label>Customer Phone NO.</label>
-                        <input type="text" id="viewCusPhone" readonly />
-
-                        <label>Address</label>
-                        <textarea id="viewCusAddress" rows="3" readonly></textarea>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button onclick="hideModal()" class="btn-cancel">Close</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ADD CUSTOMER MODAL -->
-            <div id="addCustomerModal" class="modal hidden">
-                <div class="modal-content">
-                    <h2>Add Customer</h2>
-                    <div class="modal-body">
-                        <label>Customer ID</label>
-                        <input type="text" id="cusID" readonly value="CU011" />
-
-                        <label>Customer Name</label>
-                        <input type="text" id="cusName" placeholder="Enter customer name" />
-
-                        <label>Customer NIC NO.</label>
-                        <input type="text" id="cusNIC" placeholder="Enter NIC number" />
-
-                        <label>Customer Phone NO.</label>
-                        <input type="text" id="cusPhone" placeholder="+94 71 589 6314" />
-
-                        <label>Address</label>
-                        <textarea id="cusAddress" rows="3" placeholder="Enter full address"></textarea>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button onclick="hideModal()" class="btn-cancel">Cancel</button>
-                        <button onclick="resetCustomerForm()" class="btn-reset">Reset</button>
-                        <button onclick="saveCustomer()" class="btn-save">Save</button>
-                    </div>
-              </div>    
+      <div id="customersSection" class="content-section hidden">
+        <div class="page-header">
+          <h1>Customers</h1>
+          <button onclick="showAddCustomerModal()" class="add-btn">
+            <i class="fas fa-plus"></i> Add Customer
+          </button>
         </div>
+
+        <div class="customer-search">
+          <input type="text" id="customerSearch" placeholder="Search Customer..." onkeyup="searchCustomers()"/>
+        </div>
+
+        <div class="table-container">
+          <table class="customers-table">
+            <thead>
+              <tr>
+                <th>Code ID</th>
+                <th>Customer Name</th>
+                <th>NIC NO.</th>
+                <th>Address</th>
+                <th>Phone</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="customersTableBody"></tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination">
+          <button>‹</button>
+          <button class="active">1</button>
+          <button>2</button>
+          <button>3</button>
+          <button>›</button>
+        </div>
+
+        <!-- Customer Details Modal -->
+        <div id="showCustomerModal" class="modal hidden">
+          <div class="modal-content">
+            <h2>Customer Details</h2>
+            <div class="modal-body">
+              <label>Customer ID</label>
+              <input type="text" id="viewCusID" readonly />
+              <label>Customer Name</label>
+              <input type="text" id="viewCusName" readonly />
+              <label>Customer NIC NO.</label>
+              <input type="text" id="viewCusNIC" readonly />
+              <label>Customer Phone NO.</label>
+              <input type="text" id="viewCusPhone" readonly />
+              <label>Address</label>
+              <textarea id="viewCusAddress" rows="3" readonly></textarea>
+            </div>
+            <div class="modal-footer">
+              <button onclick="hideModal()" class="btn-cancel">Close</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Customer Modal -->
+        <div id="addCustomerModal" class="modal hidden">
+          <div class="modal-content">
+            <h2>Add Customer</h2>
+            <div class="modal-body">
+              <label>Customer ID</label>
+              <input type="text" id="cusID" readonly value="CU011" />
+
+              <label>Customer Name</label>
+              <input type="text" id="cusName" placeholder="Enter customer name" />
+
+              <label>Customer NIC NO.</label>
+              <input type="text" id="cusNIC" placeholder="Enter NIC number" />
+
+              <label>Customer Phone NO.</label>
+              <input type="text" id="cusPhone" placeholder="+94 71 589 6314" />
+
+              <label>Address</label>
+              <textarea id="cusAddress" rows="3" placeholder="Enter full address"></textarea>
+            </div>
+
+            <div class="modal-footer">
+              <button onclick="hideModal()" class="btn-cancel">Cancel</button>
+              <button onclick="resetCustomerForm()" class="btn-reset">Reset</button>
+              <button onclick="saveCustomer()" class="btn-save">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
     </div>
   </div>

@@ -36,12 +36,12 @@ export function renderProducts() {
 
 // View Product
 function viewProduct(sku) {
-  const p = itemModel.getBySKU(sku);
-  document.getElementById('viewProdSKU').value = p.sku;
-  document.getElementById('viewProdName').value = p.name;
-  document.getElementById('viewProdCategory').value = p.category;
-  document.getElementById('viewProdStock').value = p.stock;
-  document.getElementById('viewProdPrice').value = p.price;
+  const product = itemModel.getBySKU(sku);
+  document.getElementById('viewProdSKU').value = product.sku;
+  document.getElementById('viewProdName').value = product.name;
+  document.getElementById('viewProdCategory').value = product.category;
+  document.getElementById('viewProdStock').value = product.stock;
+  document.getElementById('viewProdPrice').value = product.price.toFixed(2);
   document.getElementById('showProductModal').classList.remove('hidden');
 }
 
