@@ -1,4 +1,4 @@
-import { renderCustomerSelect } from './PlaceOrder.js';
+import { renderCustomerSelect } from './PlaceOrderController.js';
 import { renderProducts } from './itemController.js';
 import { renderCustomers } from './customersController.js';
 

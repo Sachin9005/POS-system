@@ -19,6 +19,7 @@ function login() {
         initChart();
         updateDate();
         renderCustomers();
+        renderProducts();
         alert("Login successful! Welcome, admin.");
     } else {
         alert("Invalid credentials! Please try again.");
