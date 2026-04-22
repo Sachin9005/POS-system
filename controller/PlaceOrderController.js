@@ -1,9 +1,6 @@
 import { renderProducts } from './itemController.js';
-import { customers,products } from '../db/DB.js';
+import { customers,products,orders,ordersDetails } from '../db/DB.js';
 
-//====place order====
-
-// Place Order Variables
 let currentOrder = [];
 
 function getNextOrderId() {

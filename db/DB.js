@@ -11,3 +11,18 @@ export let products = [
   { sku: "PT005", name: "Amazon Echo Dot", category: "Electronics", stock: 320, price: 1200},
   { sku: "PT008", name: "iPhone 14 Pro", category: "Phone", stock: 630, price: 100 }
 ];
+
+export let orders = [
+  { id: "ORD157979", date: "2024-06-01", customerId: "CU001", total: 1500 ,sub_total: 1450,discount: 50},
+  { id: "ORD157980", date: "2024-06-02", customerId: "CU002", total: 1000 ,sub_total: 980,discount: 20},
+  { id: "ORD157981", date: "2024-06-03", customerId: "CU003", total: 1200 ,sub_total: 1190,discount: 10}
+];
+
+export let ordersDetails = [
+  { orderId: "ORD157979", sku: "PT002", qty: 1},
+  { orderId: "ORD157979", sku: "PT001", qty: 1},
+  { orderId: "ORD157980", sku: "PT004", qty: 1},
+  { orderId: "ORD157981", sku: "PT005", qty: 1}
+];
+
+export let user = { username: "admin", password: "admin123" };
