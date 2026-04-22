@@ -1,12 +1,14 @@
-import { renderProducts } from './itemController.js';
-import { customers,products,orders,ordersDetails } from '../db/DB.js';
+import {CustomerModel} from '../model/CustomerModel.js';
+import {ItemModel} from '../model/ItemModel.js';
+import { OrderDetailsModel } from '../model/OrderDetailsModel.js';
+import { OrderModel } from '../model/OrderModel.js';
+
+const customerModel = new CustomerModel();
+const itemModel = new ItemModel();
+const orderDetailsModel = new OrderDetailsModel();
+const orderModel = new OrderModel();
 
 let currentOrder = [];
-
-function getNextOrderId() {
-  const seed = String(new Date().getTime()).slice(-6);
-  return `ORD${seed}`;
-}
 
 export function renderCustomerSelect() {
   populatePlaceOrderDropdowns();
@@ -21,35 +23,24 @@ export function renderCustomerSelect() {
   calculateTotal();
 }
 
-function adjustStock(sku, qtyChange) {
-  const prod = products.find(p => p.sku === sku);
-  if (!prod) return;
-  prod.stock = Math.max(0, prod.stock + qtyChange);
-}
-
-function restoreStockFromOrder(orderItems) {
-  orderItems.forEach(item => {
-    adjustStock(item.sku, item.qty);
-  });
-}
 
 // Populate Dropdowns
 function populatePlaceOrderDropdowns() {
-  const custSelect = document.getElementById('customerSelect');
-  if (custSelect) {
-    custSelect.innerHTML = '<option value="">Select Customer</option>';
-    customers.forEach(c => {
+  const cusSelect = document.getElementById('customerSelect');
+  if (cusSelect) {
+    cusSelect.innerHTML = '<option value="">Select Customer</option>';
+    customerModel.getAll().forEach(c => {
       const opt = document.createElement('option');
       opt.value = c.id;
       opt.textContent = `${c.name} (${c.id})`;
-      custSelect.appendChild(opt);
+      cusSelect.appendChild(opt);
     });
   }
 
   const itemSelect = document.getElementById('itemCode');
   if (itemSelect) {
     itemSelect.innerHTML = '<option value="">Select Item</option>';
-    products.forEach(p => {
+    itemModel.getAll().forEach(p => {
       const opt = document.createElement('option');
       opt.value = p.sku;
       opt.textContent = `${p.sku} - ${p.name}`;
@@ -61,32 +52,41 @@ function populatePlaceOrderDropdowns() {
 // Load Customer
 function loadCustomerInfo() {
   const id = document.getElementById('customerSelect').value;
-  const cust = customers.find(c => c.id === id);
-  if (cust) {
-    const targetName = document.getElementById('orderCustName');
-    const targetNIC = document.getElementById('orderCustNIC');
-    const targetAddress = document.getElementById('orderCustAddress');
+  const cus = customerModel.getById(id);
+  if (cus) {
+    const targetName = document.getElementById('orderCusName');
+    const targetNIC = document.getElementById('orderCusNIC');
+    const targetAddress = document.getElementById('orderCusAddress');
 
-    if (targetName) targetName.value = cust.name;
-    if (targetNIC) targetNIC.value = cust.nic;
-    if (targetAddress) targetAddress.value = cust.address;
+    //for avoid error if the elements are not found
+    if (targetName) targetName.value = cus.name;
+    if (targetNIC) targetNIC.value = cus.nic;
+    if (targetAddress) targetAddress.value = cus.address;
   } else {
-    document.getElementById('orderCustName').value = '';
-    document.getElementById('orderCustNIC').value = '';
-    document.getElementById('orderCustAddress').value = '';
+    const nameField = document.getElementById('orderCusName');
+    const nicField = document.getElementById('orderCusNIC');
+    const addressField = document.getElementById('orderCusAddress');
+
+    if (nameField) nameField.value = '';
+    if (nicField) nicField.value = '';
+    if (addressField) addressField.value = '';
   }
 }
-
 
 // Load Item
 function loadItemInfo() {
   const sku = document.getElementById('itemCode').value;
-  const prod = products.find(p => p.sku === sku);
+  const prod = itemModel.getBySKU(sku);
   if (prod) {
     document.getElementById('itemName').value = prod.name;
     document.getElementById('unitPrice').value = prod.price;
     document.getElementById('qtyOnHand').value = prod.stock;
     calculateItemAmount();
+  }else {
+    document.getElementById('itemName').value = '';
+    document.getElementById('unitPrice').value = '';
+    document.getElementById('qtyOnHand').value = '';
+    document.getElementById('itemAmount').value = '';
   }
 }
 
@@ -96,10 +96,15 @@ function calculateItemAmount() {
   document.getElementById('itemAmount').value = (price * qty).toFixed(2);
 }
 
+function getNextOrderId() {
+  const seed = String(new Date().getTime()).slice(-6);
+  return `ORD${seed}`;
+}
+
 // Add Item
 function addItemToOrder() {
   const sku = document.getElementById('itemCode').value;
-  const prod = products.find(p => p.sku === sku);
+  const prod = itemModel.getBySKU(sku);
   if (!prod) return alert("Please select an item");
 
   let qty = parseInt(document.getElementById('qty').value, 10);
@@ -119,9 +124,8 @@ function addItemToOrder() {
   } else {
     currentOrder.push({ sku, name: prod.name, qty, amount });
   }
-
   prod.onOrderQty = (prod.onOrderQty || 0) + qty;
-
+  resetItem();
   adjustStock(sku, -qty);
   renderProducts();
   document.getElementById('qtyOnHand').value = prod.stock;
@@ -145,17 +149,14 @@ function renderOrderTable() {
   });
 }
 
-function removeItem(index) {
-  const item = currentOrder[index];
-  if (item) {
-    adjustStock(item.sku, item.qty);
-    const prod = products.find(p => p.sku === item.sku);
-    if (prod) prod.onOrderQty = Math.max(0, (prod.onOrderQty || 0) - item.qty);
+function adjustStock(sku, qtyChange) {
+  const prod = itemModel.getBySKU(sku);
+  if (!prod) return;
+  prod.stock = Math.max(0, prod.stock + qtyChange);
+  let isUpdated = itemModel.update(sku, prod);
+  if (!isUpdated) {
+    alert("Error updating stock!");
   }
-  currentOrder.splice(index, 1);
-  renderProducts();
-  renderOrderTable();
-  calculateTotal();
 }
 
 function calculateTotal() {
@@ -180,6 +181,14 @@ function calculateBalance() {
   const cash = parseFloat(document.getElementById('cash').value) || 0;
   const balanceValue = (cash - total).toFixed(2);
 
+  if (balanceValue < 0) {
+    document.getElementById('balanceInput').value = `Rs. ${balanceValue} (Insufficient Cash)`;
+    document.getElementById('balanceInput').style.color = '#ef4444';
+  } else {
+    document.getElementById('balanceInput').value = `Rs. ${balanceValue}`;
+    document.getElementById('balanceInput').style.color = '#10b981';
+  }
+
   const balanceDisplay = document.getElementById('balanceInput');
   if (balanceDisplay) balanceDisplay.value = `Rs. ${balanceValue}`;
 }
@@ -187,11 +196,49 @@ function calculateBalance() {
 function completePurchase() {
   if (currentOrder.length === 0) return alert("No items added!");
   const totalText = document.getElementById('totalAll').value || 'Rs. 0.00';
-  alert(`✅ Order Completed Successfully!\nTotal: ${totalText}`);
+  const orderId = document.getElementById('orderId').value;
+  const orderDate = document.getElementById('orderDate').value;
+  const customerId = document.getElementById('customerSelect').value;
+  const subTotalText = document.getElementById('subTotalInput').value || 'Rs. 0.00';
+  const discount = parseFloat(document.getElementById('discount').value) || 0;
+
+  const cash = parseFloat(document.getElementById('cash').value) || 0;
+  const total = parseFloat(totalText.replace('Rs. ', '')) || 0;
+
+  if (cash < total) {
+    return alert("Insufficient cash!");
+  }
+
+  const orderData = {
+    id: orderId,
+    date: orderDate,
+    customerId,
+    total: parseFloat(totalText.replace('Rs. ', '')) || 0,
+    sub_total: parseFloat(subTotalText.replace('Rs. ', '')) || 0,
+    discount
+  };
+
+  let isOrderSaved = orderModel.save(orderData);
+
+  if (!isOrderSaved) {
+    return alert("Error saving order!");
+  }
+
   currentOrder.forEach(item => {
-    const prod = products.find(p => p.sku === item.sku);
-    if (prod) prod.onOrderQty = Math.max(0, (prod.onOrderQty || 0) - item.qty);
+    const detailData = {
+      orderId,
+      sku: item.sku,
+      qty: item.qty,
+      amount: item.amount
+    };
+    let isDetailSaved = orderDetailsModel.save(detailData);
+    if (!isDetailSaved) {
+      return alert("Error saving order details!");
+    }
   });
+
+  alert(`✅ Order Completed Successfully!\nTotal: ${totalText}`);
+
   currentOrder = [];
   renderProducts();
   renderOrderTable();
@@ -201,6 +248,26 @@ function completePurchase() {
   document.getElementById('cash').value = 0;
   calculateBalance();
 }
+
+function restoreStockFromOrder(orderItems) {
+  orderItems.forEach(item => {
+    adjustStock(item.sku, item.qty);
+  });
+}
+
+function removeItem(index) {
+  const item = currentOrder[index];
+  if (item) {
+    adjustStock(item.sku, item.qty);
+    const prod = itemModel.getBySKU(item.sku);
+    if (prod) prod.onOrderQty = Math.max(0, (prod.onOrderQty || 0) - item.qty);
+  }
+  currentOrder.splice(index, 1);
+  renderProducts();
+  renderOrderTable();
+  calculateTotal();
+}
+
 
 function voidOrder() {
   if (confirm("Void this order?")) {
@@ -217,16 +284,22 @@ function voidOrder() {
 }
 
 function cancelOrder() {
-  if (confirm("Cancel this order?")) location.reload();
+  if (confirm("Cancel this order?")) {
+    restoreStockFromOrder(currentOrder);
+    currentOrder = [];
+    renderProducts();
+    renderOrderTable();
+    calculateTotal();
+  }
 }
 
 function resetForm() {
-  const custSelect = document.getElementById('customerSelect');
-  if (custSelect) custSelect.value = '';
+  const cusSelect = document.getElementById('customerSelect');
+  if (cusSelect) cusSelect.value = '';
 
-  const targetName = document.getElementById('orderCustName');
-  const targetNIC = document.getElementById('orderCustNIC');
-  const targetAddress = document.getElementById('orderCustAddress');
+  const targetName = document.getElementById('orderCusName');
+  const targetNIC = document.getElementById('orderCusNIC');
+  const targetAddress = document.getElementById('orderCusAddress');
 
   if (targetName) targetName.value = '';
   if (targetNIC) targetNIC.value = '';
@@ -246,7 +319,7 @@ function clearAllItems() {
   if (confirm("Clear all items?")) {
     restoreStockFromOrder(currentOrder);
     currentOrder.forEach(item => {
-      const prod = products.find(p => p.sku === item.sku);
+      const prod = itemModel.getBySKU(item.sku);
       if (prod) prod.onOrderQty = Math.max(0, (prod.onOrderQty || 0) - item.qty);
     });
     currentOrder = [];
@@ -256,12 +329,14 @@ function clearAllItems() {
   }
 }
 
+
 window.renderCustomerSelect = renderCustomerSelect;
 window.loadCustomerInfo = loadCustomerInfo;
 window.loadItemInfo = loadItemInfo;
 window.calculateItemAmount = calculateItemAmount;
 window.addItemToOrder = addItemToOrder;
 window.resetItem = resetItem;
+window.resetForm = resetForm;
 window.clearAllItems = clearAllItems;
 window.calculateTotal = calculateTotal;
 window.calculateBalance = calculateBalance;

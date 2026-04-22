@@ -19,10 +19,10 @@ export let orders = [
 ];
 
 export let ordersDetails = [
-  { orderId: "ORD157979", sku: "PT002", qty: 1},
-  { orderId: "ORD157979", sku: "PT001", qty: 1},
-  { orderId: "ORD157980", sku: "PT004", qty: 1},
-  { orderId: "ORD157981", sku: "PT005", qty: 1}
+  { orderId: "ORD157979", sku: "PT002", qty: 1 ,amount: 1500},
+  { orderId: "ORD157979", sku: "PT001", qty: 1, amount: 500},
+  { orderId: "ORD157980", sku: "PT004", qty: 1, amount: 1000},
+  { orderId: "ORD157981", sku: "PT005", qty: 1, amount: 1200}
 ];
 
 export let user = { username: "admin", password: "admin123" };
