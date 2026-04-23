@@ -2,6 +2,7 @@ import { initSidebar} from './sideBarController.js';
 import { initChart,updateDate} from './dashBoardController.js';   
 import { renderProducts } from './itemController.js';
 import { renderCustomers } from './customersController.js';
+import { LoginModel } from '../model/LoginModel.js';
 
 const loginBtn = document.getElementById('loginBtn');
 loginBtn.addEventListener('click', (e) => {
@@ -12,7 +13,7 @@ function login() {
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value;
 
-    if (username === 'admin' && password === 'admin') {
+    if (LoginModel.authenticate(username, password)) {
         document.getElementById('loginPage').classList.add('hidden');
         document.getElementById('mainApp').classList.remove('hidden');
         initSidebar();
