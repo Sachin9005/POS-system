@@ -25,4 +25,4 @@ export let ordersDetails = [
   { orderId: "ORD157981", sku: "PT005", qty: 1, amount: 1200}
 ];
 
-export let user = { username: "admin", password: "admin123" };
+export let user = { username: "admin", password: "admin" };
