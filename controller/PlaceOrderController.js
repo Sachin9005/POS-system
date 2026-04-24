@@ -273,7 +273,7 @@ function voidOrder() {
   if (confirm("Void this order?")) {
     restoreStockFromOrder(currentOrder);
     currentOrder.forEach(item => {
-      const prod = products.find(p => p.sku === item.sku);
+      const prod = itemModel.getBySKU(item.sku);
       if (prod) prod.onOrderQty = Math.max(0, (prod.onOrderQty || 0) - item.qty);
     });
     currentOrder = [];
@@ -290,6 +290,7 @@ function cancelOrder() {
     renderProducts();
     renderOrderTable();
     calculateTotal();
+    resetForm();
   }
 }
 
