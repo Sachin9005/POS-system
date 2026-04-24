@@ -1,30 +1,43 @@
- 
+ import { products,orders,ordersDetails } from '../db/DB.js';
+    
+    
     // ==================== CHART ====================
     let overviewChart;
     export function initChart() {
-      const ctx = document.getElementById('overviewChart');
-      if (overviewChart) overviewChart.destroy();
-
-      overviewChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep'],
-          datasets: [{
-            data: [18, 25, 55, 48, 52, 38, 58, 32, 38],
-            borderColor: '#fb923c',
-            backgroundColor: 'rgba(251, 146, 60, 0.2)',
-            tension: 0.4,
-            borderWidth: 4,
-            fill: true
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: { legend: { display: false } },
-          scales: { y: { min: 10, max: 60, ticks: { color: '#94a3b8' } } }
-        }
-      });
+      const ctx = document.getElementById('stockChart').getContext('2d');
+        const stockChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: products.map(p => p.name),
+                datasets: [{
+                    label: 'Stock Quantity',
+                    data: products.map(p => p.stock),
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
     }
+
+    // details update
+
+    export function updateDashboardStats() {
+      document.getElementById('savedProductsCount').textContent = products.length;
+      document.getElementById('stockProductsCount').textContent = products.reduce((sum, p) => sum + p.stock, 0);
+      document.getElementById('saleProductsCount').textContent = ordersDetails.reduce((sum, d) => sum + d.qty, 0);
+      const averageRevenue = orders.length
+        ? orders.reduce((sum, o) => sum + o.total, 0) / orders.length
+        : 0;
+      document.getElementById('averageRevenueCount').textContent = averageRevenue.toFixed(2);
+}
 
     // ==================== DATE ====================
     export function updateDate() {

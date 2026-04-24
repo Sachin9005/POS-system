@@ -9,7 +9,8 @@ export let products = [
   { sku: "PT002", name: "Beats Pro", category: "Electronics", stock: 140, price: 1500},
   { sku: "PT004", name: "Apple Series 5 Watch", category: "Electronics", stock: 450, price: 1000},
   { sku: "PT005", name: "Amazon Echo Dot", category: "Electronics", stock: 320, price: 1200},
-  { sku: "PT008", name: "iPhone 14 Pro", category: "Phone", stock: 630, price: 100 }
+  { sku: "PT008", name: "iPhone 14 Pro", category: "Phone", stock: 630, price: 100 },
+  { sku: "PT009", name: "Samsung Galaxy S23", category: "Phone", stock: 500, price: 100 }
 ];
 
 export let orders = [

@@ -1,5 +1,5 @@
 import { initSidebar} from './sideBarController.js';
-import { initChart,updateDate} from './dashBoardController.js';   
+import { initChart,updateDate,updateDashboardStats} from './dashBoardController.js';   
 import { renderProducts } from './itemController.js';
 import { renderCustomers } from './customersController.js';
 import { LoginModel } from '../model/LoginModel.js';
@@ -19,6 +19,7 @@ function login() {
         initSidebar();
         initChart();
         updateDate();
+        updateDashboardStats();
         renderCustomers();
         renderProducts();
         alert("Login successful! Welcome, admin.");

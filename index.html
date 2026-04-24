@@ -73,17 +73,18 @@
       <div id="dashboardSection" class="content-section">
         <h1 class="welcome">Welcome, User</h1>
         <div class="stats-grid">
-          <div class="stat-card purple"><i class="fas fa-heart"></i><h3>50.8K</h3><p>Saved Products</p></div>
-          <div class="stat-card blue"><i class="fas fa-box"></i><h3>23.6K</h3><p>Stock Products</p></div>
-          <div class="stat-card green"><i class="fas fa-shopping-bag"></i><h3>756</h3><p>Sale Products</p></div>
-          <div class="stat-card orange"><i class="fas fa-chart-line"></i><h3>2.3K</h3><p>Average Revenue</p></div>
+          <div class="stat-card purple"><i class="fas fa-heart"></i><h3 id="savedProductsCount"></h3><p>Saved Products</p></div>
+          <div class="stat-card blue"><i class="fas fa-box"></i><h3 id="stockProductsCount"></h3><p>Stock Products</p></div>
+          <div class="stat-card green"><i class="fas fa-shopping-bag"></i><h3 id="saleProductsCount"></h3><p>Sale Products</p></div>
+          <div class="stat-card orange"><i class="fas fa-chart-line"></i><h3 id="averageRevenueCount"></h3><p>Average Revenue</p></div>
         </div>
         <div class="chart-section">
           <div class="chart-header">
             <h2>Overview</h2>
             <div class="legend"><span class="dot"></span> Deals</div>
           </div>
-          <canvas id="overviewChart"></canvas>
+            <h1>Product Stock Chart</h1>
+            <canvas id="stockChart" width="400" height="200"></canvas>
         </div>
       </div>
 
