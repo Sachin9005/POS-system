@@ -3,6 +3,7 @@ import { initChart,updateDate,updateDashboardStats} from './dashBoardController.
 import { renderProducts } from './itemController.js';
 import { renderCustomers } from './customersController.js';
 import { LoginModel } from '../model/LoginModel.js';
+import { renderOrderHistory } from './OrderHistoryController.js';
 
 const loginBtn = document.getElementById('loginBtn');
 loginBtn.addEventListener('click', (e) => {
@@ -22,6 +23,7 @@ function login() {
         updateDashboardStats();
         renderCustomers();
         renderProducts();
+        renderOrderHistory();
         alert("Login successful! Welcome, admin.");
     } else {
         alert("Invalid credentials! Please try again.");

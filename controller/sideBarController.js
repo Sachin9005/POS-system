@@ -1,6 +1,7 @@
 import { renderCustomerSelect } from './PlaceOrderController.js';
 import { renderProducts } from './itemController.js';
 import { renderCustomers } from './customersController.js';
+import { renderOrderHistory } from './OrderHistoryController.js';
 
  // ==================== NAVIGATION ====================
     function navigate(page) {
@@ -15,6 +16,7 @@ import { renderCustomers } from './customersController.js';
       if (page === 'place-order') renderCustomerSelect();
       if (page === 'products') renderProducts();
       if (page === 'customers') renderCustomers();
+      if (page === 'order-history') renderOrderHistory();
     }
 
     export function initSidebar() {

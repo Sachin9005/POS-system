@@ -37,9 +37,9 @@
         <li data-page="place-order"><i class="fas fa-cash-register"></i> Place Order</li>
         <li data-page="products"><i class="fas fa-box"></i> Products</li>
         <li data-page="customers"><i class="fas fa-users"></i> Customers</li>
+        <li data-page="order-history"><i class="fas fa-history"></i> Order History</li>
       </ul>
       <div class="sidebar-bottom">
-        <div><i class="fas fa-cog"></i> General Settings</div>
         <div id="logoutBtn" style="cursor:pointer"><i class="fas fa-sign-out-alt"></i> Logout</div>
       </div>
     </div>
@@ -84,6 +84,26 @@
           </div>
             <h1>Product Stock Chart</h1>
             <canvas id="stockChart" width="400" height="200"></canvas>
+        </div>
+      </div>
+
+      <!-- order history section -->
+      <div id="order-historySection" class="content-section hidden">
+        <h1>Order History</h1>
+        <div class="table-container">
+          <table class="order-history-table">
+            <thead>
+              <tr>
+                <th>Order Id</th>
+                <th>Date</th>
+                <th>Customer Name</th>
+                <th>Total Amount (Rs.)</th>
+                <th>Items</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="orderHistoryTableBody"></tbody>
+          </table>
         </div>
       </div>
 
