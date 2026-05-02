@@ -10,4 +10,8 @@ export class OrderDetailsModel {
     }
     return false;    
   }
+
+  getByOrderId(orderId) {
+    return ordersDetails.filter(od => od.orderId === orderId);
+  }
 }

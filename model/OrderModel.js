@@ -10,4 +10,13 @@ export class OrderModel {
         }
         return false;    
       }
+
+      getAll() {
+        if (orders.length === 0) {
+            alert("No orders found!");
+            return[];
+        }else {
+            return orders;
+        }
+      } 
 }     

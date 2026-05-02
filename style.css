@@ -355,6 +355,19 @@ body {
   font-size: 14px;
 }
 
+/* orders history table */
+.order-history-table {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+}
+
+.order-history-table th, .order-history-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #334155;
+}
+
 /* Modal */
 .modal {
   position: fixed;
