@@ -368,6 +368,13 @@ body {
   border-bottom: 1px solid #334155;
 }
 
+.order-history-table th {
+  padding: 12px;
+  text-align: left;
+  color: orange;
+  border-bottom: 1px solid #334155;
+}
+
 /* Modal */
 .modal {
   position: fixed;

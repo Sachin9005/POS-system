@@ -1,6 +1,6 @@
 import { OrderModel } from '../model/OrderModel.js';
 import { OrderDetailsModel } from '../model/OrderDetailsModel.js';
-import {ItemModel} from '../model/ItemModel.js';
+import { ItemModel} from '../model/ItemModel.js';
 import { CustomerModel } from '../model/CustomerModel.js';
 
 const customerModel = new CustomerModel();
@@ -17,19 +17,34 @@ export function renderOrderHistory() {
     return;
   }
 
-  orderModel.getAll().forEach(order => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${order.id}</td>
-      <td>${order.date}</td>
-      <td>${customerModel.getById(order.customerId)?.name || 'Unknown Customer'}</td>
-      <td>${itemModel.getBySKU(orderDetailsModel.getByOrderId(order.id)[0]?.sku)?.name || 'No details available'}</td>
-      <td>${orderDetailsModel.getByOrderId(order.id)[0]?.qty || 'No details available'}</td>
-      <td>$${order.total.toFixed(2)}</td>      
-      <td class="actions">
-        <button onclick="viewProduct('${order.id}')" class="action-btn view" title="View">👁</button>
-      </td>
-    `;
-    orderHistoryTable.appendChild(row);
+    const allOrders = orderModel.getAll();
+
+    allOrders.forEach(order => {
+    const orderDetails = orderDetailsModel.getByOrderId(order.id);
+    const customer = customerModel.getById(order.customerId);
+    const itemCount = orderDetails.length || 1;
+
+    orderDetails.forEach((detail, index) => {
+      const item = itemModel.getBySKU(detail.sku);
+      const row = document.createElement('tr');
+
+      if (index === 0) {
+        row.innerHTML = `
+          <td rowspan="${itemCount}">${order.id}</td>
+          <td rowspan="${itemCount}">${order.date}</td>
+          <td rowspan="${itemCount}">${customer?.name || 'Unknown Customer'}</td>
+          <td>${item?.name || 'Unknown Item'}</td>
+          <td>${detail.qty}</td>
+          <td rowspan="${itemCount}">$${order.total.toFixed(2)}</td>
+        `;
+      } else {
+        row.innerHTML = `
+          <td>${item?.name || 'Unknown Item'}</td>
+          <td>${detail.qty}</td>
+        `;
+      }
+
+      orderHistoryTable.appendChild(row);
+    });
   }); 
 }
