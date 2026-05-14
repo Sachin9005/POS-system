@@ -10,7 +10,7 @@ const orderModel = new OrderModel();
 
 let currentOrder = [];
 
-export function renderCustomerSelect() {
+export function renderSelects() {
   populatePlaceOrderDropdowns();
 
   const orderId = document.getElementById('orderId');
@@ -24,7 +24,7 @@ export function renderCustomerSelect() {
 }
 
 
-// Populate Dropdowns
+// Dropdowns 
 function populatePlaceOrderDropdowns() {
   const cusSelect = document.getElementById('customerSelect');
   if (cusSelect) {
@@ -53,23 +53,15 @@ function populatePlaceOrderDropdowns() {
 function loadCustomerInfo() {
   const id = document.getElementById('customerSelect').value;
   const cus = customerModel.getById(id);
-  if (cus) {
-    const targetName = document.getElementById('orderCusName');
-    const targetNIC = document.getElementById('orderCusNIC');
-    const targetAddress = document.getElementById('orderCusAddress');
 
-    //for avoid error if the elements are not found
-    if (targetName) targetName.value = cus.name;
-    if (targetNIC) targetNIC.value = cus.nic;
-    if (targetAddress) targetAddress.value = cus.address;
+  if (cus) {  
+      document.getElementById('orderCusName').value = cus.name;
+      document.getElementById('orderCusNIC').value = cus.nic;
+      document.getElementById('orderCusAddress').value = cus.address;
   } else {
-    const nameField = document.getElementById('orderCusName');
-    const nicField = document.getElementById('orderCusNIC');
-    const addressField = document.getElementById('orderCusAddress');
-
-    if (nameField) nameField.value = '';
-    if (nicField) nicField.value = '';
-    if (addressField) addressField.value = '';
+      document.getElementById('orderCusName').value = '';
+      document.getElementById('orderCusNIC').value = '';
+      document.getElementById('orderCusAddress').value = '';
   }
 }
 
@@ -88,17 +80,6 @@ function loadItemInfo() {
     document.getElementById('qtyOnHand').value = '';
     document.getElementById('itemAmount').value = '';
   }
-}
-
-function calculateItemAmount() {
-  const price = parseFloat(document.getElementById('unitPrice').value) || 0;
-  const qty = parseInt(document.getElementById('qty').value) || 0;
-  document.getElementById('itemAmount').value = (price * qty).toFixed(2);
-}
-
-function getNextOrderId() {
-  const seed = String(new Date().getTime()).slice(-6);
-  return `ORD${seed}`;
 }
 
 // Add Item
@@ -173,6 +154,12 @@ function calculateTotal() {
   if (totalAmountField) totalAmountField.textContent = `Rs. ${total.toFixed(2)}`;
 
   calculateBalance();
+}
+
+function calculateItemAmount() {
+  const price = parseFloat(document.getElementById('unitPrice').value) || 0;
+  const qty = parseInt(document.getElementById('qty').value) || 0;
+  document.getElementById('itemAmount').value = (price * qty).toFixed(2);
 }
 
 function calculateBalance() {
@@ -255,6 +242,11 @@ function restoreStockFromOrder(orderItems) {
   });
 }
 
+function getNextOrderId() {
+  const seed = String(new Date().getTime()).slice(-6);
+  return `ORD${seed}`;
+}
+
 function removeItem(index) {
   const item = currentOrder[index];
   if (item) {
@@ -331,7 +323,7 @@ function clearAllItems() {
 }
 
 
-window.renderCustomerSelect = renderCustomerSelect;
+window.renderCustomerSelect = renderSelects;
 window.loadCustomerInfo = loadCustomerInfo;
 window.loadItemInfo = loadItemInfo;
 window.calculateItemAmount = calculateItemAmount;

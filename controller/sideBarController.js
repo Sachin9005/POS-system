@@ -1,4 +1,4 @@
-import { renderCustomerSelect } from './PlaceOrderController.js';
+import { renderSelects } from './PlaceOrderController.js';
 import { renderProducts } from './itemController.js';
 import { renderCustomers } from './customersController.js';
 import { renderOrderHistory } from './OrderHistoryController.js';
@@ -13,7 +13,7 @@ import { renderOrderHistory } from './OrderHistoryController.js';
 
       document.querySelector(`[data-page="${page}"]`).classList.add('active');
 
-      if (page === 'place-order') renderCustomerSelect();
+      if (page === 'place-order') renderSelects();
       if (page === 'products') renderProducts();
       if (page === 'customers') renderCustomers();
       if (page === 'order-history') renderOrderHistory();
