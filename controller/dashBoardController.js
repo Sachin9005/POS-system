@@ -1,7 +1,7 @@
  import { products,orders,ordersDetails } from '../db/DB.js';
     
     
-    // ==================== CHART ====================
+    // CHART
     let overviewChart;
     export function initChart() {
       const ctx = document.getElementById('stockChart').getContext('2d');
@@ -39,7 +39,7 @@
       document.getElementById('averageRevenueCount').textContent = averageRevenue.toFixed(2);
 }
 
-    // ==================== DATE ====================
+    // DATE
     export function updateDate() {
       const dateEl = document.getElementById('currentDate');
       dateEl.textContent = new Date().toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
